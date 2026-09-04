@@ -1,0 +1,307 @@
+{% extends "complaints/base.html" %}
+
+{% block title %}
+Edit User
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+    .form-container {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .form-card {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: var(--shadow-md);
+    }
+
+    .form-header {
+        margin-bottom: 25px;
+    }
+
+    .form-header h1 {
+        margin-bottom: 6px;
+    }
+
+    .form-header p {
+        color: var(--text-muted);
+        font-size: 14px;
+    }
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 7px;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 11px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 7px;
+        font-family: inherit;
+        font-size: 14px;
+        outline: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .form-group input[type="checkbox"] {
+        width: auto;
+        margin-right: 8px;
+    }
+
+    .error-message {
+        color: var(--danger);
+        font-size: 13px;
+        margin-top: 5px;
+    }
+
+    .form-error {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #b91c1c;
+        padding: 12px;
+        border-radius: 7px;
+        margin-bottom: 20px;
+    }
+
+    .button-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 25px;
+    }
+
+    .cancel-button {
+        background: #64748b;
+    }
+
+    .cancel-button:hover {
+        background: #475569;
+    }
+
+    .info-box {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        color: #1e40af;
+        padding: 12px;
+        border-radius: 7px;
+        margin-bottom: 20px;
+        font-size: 13px;
+    }
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="form-container">
+
+    <div class="form-card">
+
+        <div class="form-header">
+
+            <h1>Edit User</h1>
+
+            <p>
+                Update the user's account information and role.
+            </p>
+
+        </div>
+
+
+        <div class="info-box">
+
+            Editing user:
+            <strong>{{ user_obj.username }}</strong>
+
+        </div>
+
+
+        {% if form.non_field_errors %}
+
+            <div class="form-error">
+                {{ form.non_field_errors }}
+            </div>
+
+        {% endif %}
+
+
+        <form method="post">
+
+            {% csrf_token %}
+
+
+            <!-- USERNAME -->
+
+            <div class="form-group">
+
+                <label>
+                    Username
+                </label>
+
+                {{ form.username }}
+
+                {% for error in form.username.errors %}
+
+                    <div class="error-message">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- FIRST NAME -->
+
+            <div class="form-group">
+
+                <label>
+                    First Name
+                </label>
+
+                {{ form.first_name }}
+
+                {% for error in form.first_name.errors %}
+
+                    <div class="error-message">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- LAST NAME -->
+
+            <div class="form-group">
+
+                <label>
+                    Last Name
+                </label>
+
+                {{ form.last_name }}
+
+                {% for error in form.last_name.errors %}
+
+                    <div class="error-message">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- EMAIL -->
+
+            <div class="form-group">
+
+                <label>
+                    Email Address
+                </label>
+
+                {{ form.email }}
+
+                {% for error in form.email.errors %}
+
+                    <div class="error-message">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- ROLE -->
+
+            <div class="form-group">
+
+                <label>
+                    Role
+                </label>
+
+                {{ form.role }}
+
+                {% for error in form.role.errors %}
+
+                    <div class="error-message">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- ACTIVE STATUS -->
+
+            <div class="form-group">
+
+                <label>
+                    {{ form.is_active }}
+
+                    Account Active
+
+                </label>
+
+                {% for error in form.is_active.errors %}
+
+                    <div class="error-message">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- BUTTONS -->
+
+            <div class="button-row">
+
+                <button
+                    type="submit"
+                    class="button"
+                >
+                    Save Changes
+                </button>
+
+
+                <a
+                    href="{% url 'admin_users' %}"
+                    class="button cancel-button"
+                >
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,343 @@
+{% extends "complaints/base.html" %}
+
+
+{% block title %}
+User Management
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        gap: 15px;
+    }
+
+
+    .page-header h1 {
+        margin: 0;
+    }
+
+
+    .add-button {
+        background: #16a34a;
+    }
+
+
+    .add-button:hover {
+        background: #15803d;
+    }
+
+
+    .table-card {
+        overflow-x: auto;
+    }
+
+
+    .user-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+    }
+
+
+    .user-table th {
+        background: #f1f5f9;
+        color: #334155;
+        font-size: 14px;
+        text-align: left;
+        padding: 14px;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+
+    .user-table td {
+        padding: 14px;
+        border-bottom: 1px solid #e2e8f0;
+        vertical-align: middle;
+    }
+
+
+    .user-table tr:hover {
+        background: #f8fafc;
+    }
+
+
+    .role-badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+
+    .role-student {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+
+    .role-staff {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+
+    .role-admin {
+        background: #ede9fe;
+        color: #6d28d9;
+    }
+
+
+    .active-badge {
+        color: #15803d;
+        font-weight: 600;
+    }
+
+
+    .inactive-badge {
+        color: #dc2626;
+        font-weight: 600;
+    }
+
+
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+
+    .small-button {
+        padding: 7px 12px;
+        font-size: 13px;
+    }
+
+
+    .edit-button {
+        background: #2563eb;
+    }
+
+
+    .delete-button {
+        background: #dc2626;
+    }
+
+
+    .delete-button:hover {
+        background: #b91c1c;
+    }
+
+
+    .empty-message {
+        text-align: center;
+        padding: 30px;
+        color: #64748b;
+    }
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1>User Management</h1>
+
+        <p style="color: #64748b; margin-top: 5px;">
+            Manage students, staff and administrators.
+        </p>
+
+    </div>
+
+
+    <a
+        href="{% url 'admin_create_user' %}"
+        class="button add-button"
+    >
+        + Add User
+    </a>
+
+</div>
+
+
+<div class="card table-card">
+
+    <table class="user-table">
+
+        <thead>
+
+            <tr>
+
+                <th>Username</th>
+
+                <th>Name</th>
+
+                <th>Email</th>
+
+                <th>Role</th>
+
+                <th>Status</th>
+
+                <th>Actions</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for user_obj in users %}
+
+            <tr>
+
+                <td>
+                    <strong>
+                        {{ user_obj.username }}
+                    </strong>
+                </td>
+
+
+                <td>
+
+                    {% if user_obj.first_name or user_obj.last_name %}
+
+                        {{ user_obj.first_name }}
+                        {{ user_obj.last_name }}
+
+                    {% else %}
+
+                        —
+
+                    {% endif %}
+
+                </td>
+
+
+                <td>
+
+                    {% if user_obj.email %}
+
+                        {{ user_obj.email }}
+
+                    {% else %}
+
+                        —
+
+                    {% endif %}
+
+                </td>
+
+
+                <td>
+
+                    {% if user_obj.profile.role == "student" %}
+
+                        <span class="role-badge role-student">
+                            Student
+                        </span>
+
+                    {% elif user_obj.profile.role == "staff" %}
+
+                        <span class="role-badge role-staff">
+                            Staff
+                        </span>
+
+                    {% elif user_obj.profile.role == "admin" %}
+
+                        <span class="role-badge role-admin">
+                            Admin
+                        </span>
+
+                    {% else %}
+
+                        <span class="role-badge">
+                            Unknown
+                        </span>
+
+                    {% endif %}
+
+                </td>
+
+
+                <td>
+
+                    {% if user_obj.is_active %}
+
+                        <span class="active-badge">
+                            ● Active
+                        </span>
+
+                    {% else %}
+
+                        <span class="inactive-badge">
+                            ● Inactive
+                        </span>
+
+                    {% endif %}
+
+                </td>
+
+
+                <td>
+
+                    <div class="action-buttons">
+
+                        <a
+                            href="{% url 'admin_edit_user' user_obj.id %}"
+                            class="button small-button edit-button"
+                        >
+                            Edit
+                        </a>
+
+
+                        {% if user_obj != request.user %}
+
+                            <a
+                                href="{% url 'admin_delete_user' user_obj.id %}"
+                                class="button small-button delete-button"
+                            >
+                                Delete
+                            </a>
+
+                        {% endif %}
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+            {% empty %}
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    class="empty-message"
+                >
+                    No users found.
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

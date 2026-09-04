@@ -1,0 +1,160 @@
+{% extends "complaints/base.html" %}
+
+{% block title %}My Issues{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .page-title { 
+        font-size: 1.75rem; 
+        font-weight: 700; 
+        color: var(--text-main); 
+        margin: 0; 
+    }
+
+    .table-container {
+        background: white;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+        overflow-x: auto;
+    }
+
+    .styled-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 800px;
+    }
+
+    .styled-table th {
+        background: #f8fafc;
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 1rem 1.5rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .styled-table td {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.9rem;
+        color: var(--text-main);
+    }
+
+    .styled-table tbody tr {
+        transition: var(--transition);
+    }
+
+    .styled-table tbody tr:hover {
+        background: rgba(79, 70, 229, 0.02);
+    }
+
+    .styled-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Make the title link look nice and hoverable */
+    .issue-title a { 
+        font-weight: 600; 
+        color: var(--primary); 
+        text-decoration: none;
+        transition: var(--transition);
+    }
+    
+    .issue-title a:hover {
+        color: var(--primary-hover);
+        text-decoration: underline;
+    }
+    
+    .empty-message {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: var(--radius-lg);
+        border: 1px dashed var(--border-color);
+    }
+
+    /* Priority Badges - Solid Colors */
+    .priority-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.35rem 0.85rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: white;
+        box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    }
+    .badge-red { background-color: #ef4444; }    /* HIGH */
+    .badge-orange { background-color: #f97316; } /* MEDIUM */
+    .badge-green { background-color: #22c55e; }  /* LOW */
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">My Issues</h1>
+    <a href="{% url 'submit_complaint' %}" class="button">+ Submit New Issue</a>
+</div>
+
+{% if complaints %}
+    <div class="table-container">
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Submitted On</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in complaints %}
+                    <tr>
+                        <td class="issue-title">
+                            <a href="{% url 'complaint_detail' c.id %}">{{ c.title }}</a>
+                        </td>
+                        <td>{{ c.category }}</td>
+                        <td>
+                            <!-- Logic for Solid Colors -->
+                            {% if c.priority == "HIGH" %}
+                                <span class="priority-badge badge-red">{{ c.priority }}</span>
+                            {% elif c.priority == "MEDIUM" %}
+                                <span class="priority-badge badge-orange">{{ c.priority }}</span>
+                            {% else %}
+                                <span class="priority-badge badge-green">{{ c.priority }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <strong>{{ c.get_status_display }}</strong>
+                        </td>
+                        <td style="color: var(--text-muted);">{{ c.created_at|date:"M d, Y - H:i" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="empty-message">
+        <h3 style="margin-bottom: 1rem; color: var(--text-muted);">No Issues Found</h3>
+        <p style="margin-bottom: 2rem;">You haven't submitted any complaints yet.</p>
+        <a href="{% url 'submit_complaint' %}" class="button">Submit Your First Issue</a>
+    </div>
+{% endif %}
+{% endblock %}

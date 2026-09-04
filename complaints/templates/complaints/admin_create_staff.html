@@ -1,0 +1,461 @@
+{% extends "complaints/base.html" %}
+
+
+{% block title %}
+Add Staff
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+    .form-container {
+        max-width: 750px;
+        margin: 0 auto;
+    }
+
+    .form-card {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: var(--shadow-md);
+    }
+
+    .form-header {
+        margin-bottom: 25px;
+    }
+
+    .form-header h1 {
+        margin-bottom: 6px;
+    }
+
+    .form-header p {
+        color: var(--text-muted);
+        font-size: 14px;
+    }
+
+    .section-title {
+        margin-top: 25px;
+        margin-bottom: 15px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 17px;
+    }
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 7px;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 11px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 7px;
+        font-family: inherit;
+        font-size: 14px;
+        outline: none;
+    }
+
+    .form-group input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .form-group input[type="checkbox"] {
+        width: auto;
+        margin-right: 8px;
+    }
+
+    .error-message {
+        color: var(--danger);
+        font-size: 13px;
+        margin-top: 5px;
+    }
+
+    .form-error {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #b91c1c;
+        padding: 12px;
+        border-radius: 7px;
+        margin-bottom: 20px;
+    }
+
+    .security-box {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        color: #166534;
+        padding: 14px;
+        border-radius: 8px;
+        margin-bottom: 22px;
+        font-size: 13px;
+    }
+
+    .verification-box {
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        padding: 14px;
+        border-radius: 8px;
+        margin-top: 10px;
+        font-size: 13px;
+        color: #92400e;
+    }
+
+    .button-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 25px;
+    }
+
+    .create-button {
+        background: var(--success);
+    }
+
+    .create-button:hover {
+        background: #059669;
+    }
+
+    .cancel-button {
+        background: #64748b;
+    }
+
+    .cancel-button:hover {
+        background: #475569;
+    }
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="form-container">
+
+    <div class="form-card">
+
+        <div class="form-header">
+
+            <h1>Add Service Staff</h1>
+
+            <p>
+                Create a staff account and enter their verified
+                professional information.
+            </p>
+
+        </div>
+
+
+        <div class="security-box">
+
+            <strong>🔐 Security:</strong>
+
+            Staff members should be verified by the administrator
+            before they are assigned to student complaints.
+
+        </div>
+
+
+        {% if form.non_field_errors %}
+
+            <div class="form-error">
+
+                {{ form.non_field_errors }}
+
+            </div>
+
+        {% endif %}
+
+
+        <form method="post">
+
+            {% csrf_token %}
+
+
+            <!-- ===================================== -->
+            <!-- ACCOUNT INFORMATION -->
+            <!-- ===================================== -->
+
+            <h3 class="section-title">
+                Account Information
+            </h3>
+
+
+            <!-- USERNAME -->
+
+            <div class="form-group">
+
+                <label>
+                    Username
+                </label>
+
+                {{ form.username }}
+
+                {% for error in form.username.errors %}
+
+                    <div class="error-message">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- PASSWORD -->
+
+            <div class="form-group">
+
+                <label>
+                    Password
+                </label>
+
+                {{ form.password }}
+
+                {% for error in form.password.errors %}
+
+                    <div class="error-message">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- CONFIRM PASSWORD -->
+
+            <div class="form-group">
+
+                <label>
+                    Confirm Password
+                </label>
+
+                {{ form.confirm_password }}
+
+                {% for error in form.confirm_password.errors %}
+
+                    <div class="error-message">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- ===================================== -->
+            <!-- PERSONAL INFORMATION -->
+            <!-- ===================================== -->
+
+            <h3 class="section-title">
+                Staff Identity
+            </h3>
+
+
+            <!-- FIRST NAME -->
+
+            <div class="form-group">
+
+                <label>
+                    First Name
+                </label>
+
+                {{ form.first_name }}
+
+                {% for error in form.first_name.errors %}
+
+                    <div class="error-message">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- LAST NAME -->
+
+            <div class="form-group">
+
+                <label>
+                    Last Name
+                </label>
+
+                {{ form.last_name }}
+
+                {% for error in form.last_name.errors %}
+
+                    <div class="error-message">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- EMAIL -->
+
+            <div class="form-group">
+
+                <label>
+                    Official Email
+                </label>
+
+                {{ form.email }}
+
+                {% for error in form.email.errors %}
+
+                    <div class="error-message">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- ===================================== -->
+            <!-- PROFESSIONAL INFORMATION -->
+            <!-- ===================================== -->
+
+            <h3 class="section-title">
+                Professional Information
+            </h3>
+
+
+            <!-- EMPLOYEE ID -->
+
+            <div class="form-group">
+
+                <label>
+                    Employee ID
+                </label>
+
+                {{ form.employee_id }}
+
+                {% for error in form.employee_id.errors %}
+
+                    <div class="error-message">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- DEPARTMENT -->
+
+            <div class="form-group">
+
+                <label>
+                    Department / Service
+                </label>
+
+                {{ form.department }}
+
+                {% for error in form.department.errors %}
+
+                    <div class="error-message">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- PHONE -->
+
+            <div class="form-group">
+
+                <label>
+                    Contact Number
+                </label>
+
+                {{ form.phone_number }}
+
+                {% for error in form.phone_number.errors %}
+
+                    <div class="error-message">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- ===================================== -->
+            <!-- VERIFICATION -->
+            <!-- ===================================== -->
+
+            <div class="form-group">
+
+                <label>
+
+                    {{ form.is_verified }}
+
+                    Verify Staff Immediately
+
+                </label>
+
+                {% for error in form.is_verified.errors %}
+
+                    <div class="error-message">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+                <div class="verification-box">
+
+                    ⚠️ Only check this option after the administrator
+                    has verified the staff member's identity and
+                    contact information.
+
+                </div>
+
+            </div>
+
+
+            <!-- ===================================== -->
+            <!-- BUTTONS -->
+            <!-- ===================================== -->
+
+            <div class="button-row">
+
+                <button
+                    type="submit"
+                    class="button create-button"
+                >
+                    Create Staff
+                </button>
+
+
+                <a
+                    href="{% url 'admin_staff' %}"
+                    class="button cancel-button"
+                >
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

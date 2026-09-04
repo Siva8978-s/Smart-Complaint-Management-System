@@ -1,0 +1,237 @@
+{% extends "complaints/base.html" %}
+
+{% block title %}Issue Details & Chat{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    /* Issue Summary Box */
+    .issue-summary {
+        background: white;
+        padding: 2rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+    }
+    
+    .issue-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .meta-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .meta-label { color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+    .meta-value { font-weight: 500; color: var(--text-main); }
+
+    /* Chat Section */
+    .chat-container {
+        background: #f8fafc;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        height: 500px; /* Fixed height for the chat area */
+        overflow: hidden;
+    }
+
+    .chat-header {
+        background: white;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .chat-messages {
+        flex: 1;
+        padding: 1.5rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .message-wrapper {
+        display: flex;
+        flex-direction: column;
+        max-width: 80%;
+    }
+
+    /* Sent by the currently logged-in user */
+    .message-sent {
+        align-self: flex-end;
+        align-items: flex-end;
+    }
+    .message-sent .message-bubble {
+        background: var(--primary);
+        color: white;
+        border-radius: 16px 16px 0px 16px;
+    }
+
+    /* Sent by someone else (staff/student) */
+    .message-received {
+        align-self: flex-start;
+        align-items: flex-start;
+    }
+    .message-received .message-bubble {
+        background: white;
+        color: var(--text-main);
+        border: 1px solid var(--border-color);
+        border-radius: 16px 16px 16px 0px;
+    }
+
+    .message-bubble {
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .message-meta {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 0.25rem;
+        padding: 0 0.25rem;
+    }
+
+    /* Comment Form Area */
+    .chat-input-area {
+        background: white;
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+    
+    .chat-input-area form {
+        display: flex;
+        width: 100%;
+        gap: 1rem;
+        align-items: center;
+    }
+    
+    .btn-send {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        height: 100%;
+    }
+    
+    .btn-send:hover { background: var(--primary-hover); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 1rem;">
+    <!-- Back button based on role -->
+    {% if request.user.profile.role == 'student' %}
+        <a href="{% url 'my_complaints' %}" style="text-decoration: none; color: var(--primary);">← Back to My Issues</a>
+    {% elif request.user.profile.role == 'staff' %}
+        <a href="{% url 'staff_dashboard' %}" style="text-decoration: none; color: var(--primary);">← Back to Dashboard</a>
+    {% else %}
+        <a href="{% url 'admin_dashboard' %}" style="text-decoration: none; color: var(--primary);">← Back to Dashboard</a>
+    {% endif %}
+</div>
+
+<div class="page-container">
+    
+    <!-- 1. Issue Details -->
+    <div class="issue-summary">
+        <div class="issue-header">
+            <div>
+                <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem;">{{ complaint.title }}</h1>
+                <p style="color: var(--text-muted);">{{ complaint.description }}</p>
+            </div>
+            <div style="text-align: right;">
+                <div class="badge badge-{{ complaint.priority|lower }}">{{ complaint.priority }}</div><br>
+                <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">{{ complaint.get_status_display }}</span>
+            </div>
+        </div>
+
+        <div class="meta-grid">
+            <div><span class="meta-label">Category</span><br><span class="meta-value">{{ complaint.category }}</span></div>
+            <div><span class="meta-label">Location</span><br><span class="meta-value">{{ complaint.location }}</span></div>
+            <div><span class="meta-label">Submitted By</span><br><span class="meta-value">{{ complaint.submitted_by.username }}</span></div>
+            <div>
+                <span class="meta-label">Assigned To</span><br>
+                <span class="meta-value">{% if complaint.assigned_to %}{{ complaint.assigned_to.username }}{% else %}Pending{% endif %}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Chat Interface -->
+    <div class="chat-container">
+        <div class="chat-header">
+            💬 Conversation Thread
+        </div>
+
+        <div class="chat-messages" id="chatBox">
+            {% if comments %}
+                {% for comment in comments %}
+                    
+                    {% if comment.author == request.user %}
+                        <!-- Sent by Logged in User -->
+                        <div class="message-wrapper message-sent">
+                            <div class="message-bubble">{{ comment.text }}</div>
+                            <div class="message-meta">You • {{ comment.created_at|date:"M d, H:i" }}</div>
+                        </div>
+                    {% else %}
+                        <!-- Received from other User -->
+                        <div class="message-wrapper message-received">
+                            <div class="message-bubble">{{ comment.text }}</div>
+                            <div class="message-meta">{{ comment.author.username }} • {{ comment.created_at|date:"M d, H:i" }}</div>
+                        </div>
+                    {% endif %}
+
+                {% endfor %}
+            {% else %}
+                <div style="text-align: center; color: var(--text-muted); margin-top: 2rem;">
+                    No messages yet. Send a message below to start the conversation!
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Chat Form -->
+        <div class="chat-input-area">
+            <form method="post">
+                {% csrf_token %}
+                <div style="flex: 1;">
+                    {{ form.as_p }}
+                </div>
+                <button type="submit" class="btn-send">Send ✈️</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<!-- Auto-scroll chat to bottom -->
+<script>
+    const chatBox = document.getElementById("chatBox");
+    chatBox.scrollTop = chatBox.scrollHeight;
+</script>
+{% endblock %}

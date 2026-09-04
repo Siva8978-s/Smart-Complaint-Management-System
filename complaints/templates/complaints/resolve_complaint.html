@@ -1,0 +1,39 @@
+{% extends "complaints/base.html" %}
+
+{% block title %}Resolve Issue{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container { max-width: 600px; margin: 0 auto; }
+    .issue-summary { background: #f8fafc; padding: 1.5rem; border-radius: var(--radius-md); margin-bottom: 2rem; border-left: 4px solid var(--success); }
+    .issue-summary h2 { margin-bottom: 0.5rem; font-size: 1.25rem; }
+    
+    .form-group p { margin-bottom: 1.5rem; }
+    .form-group label { display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem; }
+    .form-group textarea { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: #f8fafc; min-height: 120px; resize: vertical; }
+    .form-group textarea:focus { border-color: var(--success); outline: none; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15); background: white; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="card">
+        <h1 style="margin-bottom: 1.5rem;">Resolve Issue</h1>
+        
+        <div class="issue-summary">
+            <h2>{{ complaint.title }}</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">{{ complaint.description }}</p>
+        </div>
+
+        <form method="post" class="form-group">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="button" style="width: 100%; padding: 1rem; margin-top: 1rem; background: var(--success);">Mark as Resolved</button>
+        </form>
+        
+        <div style="text-align: center; margin-top: 1.5rem;">
+            <a href="{% url 'staff_dashboard' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem;">← Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

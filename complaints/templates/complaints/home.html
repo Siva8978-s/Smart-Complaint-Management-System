@@ -1,0 +1,116 @@
+{% extends "complaints/base.html" %}
+
+{% block title %}Smart Complaint System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero {
+        text-align: center;
+        padding: 5rem 2rem;
+        background: linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(248, 250, 252, 0) 100%);
+        border-radius: var(--radius-xl);
+        margin-bottom: 3rem;
+        border: 1px solid rgba(79, 70, 229, 0.1);
+    }
+
+    .hero h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: var(--text-main);
+        margin-bottom: 1.5rem;
+        line-height: 1.2;
+        letter-spacing: -0.05em;
+    }
+
+    .hero h1 span {
+        background: linear-gradient(135deg, var(--primary) 0%, #818cf8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+        font-size: 1.25rem;
+        color: var(--text-muted);
+        max-width: 600px;
+        margin: 0 auto 2.5rem;
+    }
+
+    .login-button {
+        padding: 1rem 2.5rem;
+        font-size: 1.125rem;
+        border-radius: 9999px;
+    }
+
+    .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .feature-card {
+        padding: 2.5rem 2rem;
+        text-align: center;
+        border-radius: var(--radius-xl);
+        background: white;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+        border-color: rgba(79, 70, 229, 0.3);
+    }
+
+    .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        display: inline-block;
+        padding: 1rem;
+        background: rgba(79, 70, 229, 0.05);
+        border-radius: 1rem;
+    }
+
+    .feature-card h3 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    .feature-card p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Smart <span>Resolution</span> Hub</h1>
+    <p>Experience the next generation of issue tracking with AI-powered priority detection and voice-to-text submissions.</p>
+    <a href="{% url 'login' %}" class="button login-button">Get Started</a>
+</div>
+
+<div class="features">
+    <div class="feature-card">
+        <div class="feature-icon">🎤</div>
+        <h3>Voice-to-Text</h3>
+        <p>Dictate your issues effortlessly. Our intelligent system converts your speech into detailed text descriptions instantly.</p>
+    </div>
+
+    <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Smart Priority</h3>
+        <p>No manual tagging needed. Our algorithm analyzes your text and automatically assigns the correct priority level.</p>
+    </div>
+
+    <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Service Tracking</h3>
+        <p>Stay updated at every step. Track your request from submission to assignment and final resolution in real-time.</p>
+    </div>
+</div>
+{% endblock %}

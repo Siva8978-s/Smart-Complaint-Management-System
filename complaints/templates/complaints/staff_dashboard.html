@@ -1,0 +1,146 @@
+{% extends "complaints/base.html" %}
+
+{% block title %}Staff Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-title { font-size: 1.75rem; font-weight: 700; margin-bottom: 2rem; color: var(--text-main); }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--card-bg);
+        padding: 1.5rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .stat-label { color: var(--text-muted); font-size: 0.875rem; font-weight: 600; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .stat-value { font-size: 2rem; font-weight: 700; color: var(--primary); }
+
+    .task-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-color);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .task-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+    .task-header h3 { margin: 0; font-size: 1.1rem; }
+    
+    .task-meta {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: var(--bg-color);
+        border-radius: var(--radius-md);
+        font-size: 0.9rem;
+    }
+    .meta-item { display: flex; flex-direction: column; }
+    .meta-label { color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+    .meta-value { color: var(--text-main); font-weight: 500; }
+
+    .task-actions { border-top: 1px solid var(--border-color); padding-top: 1rem; text-align: right; }
+    
+    .success-alert {
+        padding: 1rem;
+        background: rgba(16, 185, 129, 0.1);
+        border-radius: var(--radius-md);
+        color: var(--success);
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="dashboard-title">Staff Task Board</h1>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <span class="stat-label">Total Assigned</span>
+        <span class="stat-value">{{ total }}</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Pending Start</span>
+        <span class="stat-value" style="color: var(--danger);">{{ assigned }}</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">In Progress</span>
+        <span class="stat-value" style="color: var(--warning);">{{ in_progress }}</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Resolved</span>
+        <span class="stat-value" style="color: var(--success);">{{ resolved }}</span>
+    </div>
+</div>
+
+<h2 style="margin-bottom: 1rem; font-size: 1.25rem;">My Assigned Tasks</h2>
+
+{% if complaints %}
+    {% for complaint in complaints %}
+        <div class="task-card">
+            <div class="task-header">
+                <div>
+                    <!-- <h3>{{ complaint.title }}</h3> -->
+                     <h3><a href="{% url 'complaint_detail' complaint.id %}" style="text-decoration: none; color: var(--text-main);">{{ complaint.title }}</a></h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;">{{ complaint.description }}</p>
+                </div>
+                <div class="badge badge-{{ complaint.priority|lower }}">{{ complaint.priority }}</div>
+            </div>
+
+            <div class="task-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Category</span>
+                    <span class="meta-value">{{ complaint.category }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Location</span>
+                    <span class="meta-value">{{ complaint.location }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Submitted By</span>
+                    <span class="meta-value">{{ complaint.submitted_by.username }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Status</span>
+                    <span class="meta-value">{{ complaint.get_status_display }}</span>
+                </div>
+            </div>
+
+            <div class="task-actions">
+                {% if complaint.status == "assigned" %}
+                    <form method="post" action="{% url 'start_complaint' complaint.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="button">Start Work</button>
+                    </form>
+                {% elif complaint.status == "in_progress" %}
+                    <a href="{% url 'resolve_complaint' complaint.id %}" class="button" style="background: var(--success);">Resolve Task</a>
+                {% elif complaint.status == "resolved" %}
+                    <div class="success-alert">
+                        <strong>✓ Task Resolved</strong>
+                        {% if complaint.resolution_remarks %}
+                            <br><span style="color: var(--text-main);">Remarks: {{ complaint.resolution_remarks }}</span>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="card" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+        No tasks have been assigned to you yet. You're all caught up!
+    </div>
+{% endif %}
+{% endblock %}

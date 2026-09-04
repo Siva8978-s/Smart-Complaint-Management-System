@@ -1,0 +1,351 @@
+{% extends "complaints/base.html" %}
+
+
+{% block title %}
+Add User
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+    .form-container {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+
+    .form-card {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: var(--shadow-md);
+    }
+
+
+    .form-header {
+        margin-bottom: 25px;
+    }
+
+
+    .form-header h1 {
+        margin-bottom: 6px;
+    }
+
+
+    .form-header p {
+        color: var(--text-muted);
+        font-size: 14px;
+    }
+
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+
+    .form-group label {
+        display: block;
+        margin-bottom: 7px;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 11px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 7px;
+        font-family: inherit;
+        font-size: 14px;
+        outline: none;
+        transition: var(--transition);
+    }
+
+
+    .form-group input:focus,
+    .form-group select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+
+    .error-message {
+        color: var(--danger);
+        font-size: 13px;
+        margin-top: 5px;
+    }
+
+
+    .form-error {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #b91c1c;
+        padding: 12px;
+        border-radius: 7px;
+        margin-bottom: 20px;
+        font-size: 14px;
+    }
+
+
+    .role-info {
+        margin-top: 8px;
+        padding: 12px;
+        background: #f8fafc;
+        border-radius: 7px;
+        color: var(--text-muted);
+        font-size: 13px;
+    }
+
+
+    .button-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 25px;
+    }
+
+
+    .cancel-button {
+        background: #64748b;
+    }
+
+
+    .cancel-button:hover {
+        background: #475569;
+    }
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="form-container">
+
+    <div class="form-card">
+
+        <div class="form-header">
+
+            <h1>Add New User</h1>
+
+            <p>
+                Create a student, staff member or administrator account.
+            </p>
+
+        </div>
+
+
+        {% if form.non_field_errors %}
+
+            <div class="form-error">
+
+                {{ form.non_field_errors }}
+
+            </div>
+
+        {% endif %}
+
+
+        <form method="post">
+
+            {% csrf_token %}
+
+
+            <!-- USERNAME -->
+
+            <div class="form-group">
+
+                <label for="{{ form.username.id_for_label }}">
+                    Username
+                </label>
+
+                {{ form.username }}
+
+                {% for error in form.username.errors %}
+
+                    <div class="error-message">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- FIRST NAME -->
+
+            <div class="form-group">
+
+                <label for="{{ form.first_name.id_for_label }}">
+                    First Name
+                </label>
+
+                {{ form.first_name }}
+
+                {% for error in form.first_name.errors %}
+
+                    <div class="error-message">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- LAST NAME -->
+
+            <div class="form-group">
+
+                <label for="{{ form.last_name.id_for_label }}">
+                    Last Name
+                </label>
+
+                {{ form.last_name }}
+
+                {% for error in form.last_name.errors %}
+
+                    <div class="error-message">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- EMAIL -->
+
+            <div class="form-group">
+
+                <label for="{{ form.email.id_for_label }}">
+                    Email Address
+                </label>
+
+                {{ form.email }}
+
+                {% for error in form.email.errors %}
+
+                    <div class="error-message">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- PASSWORD -->
+
+            <div class="form-group">
+
+                <label for="{{ form.password.id_for_label }}">
+                    Password
+                </label>
+
+                {{ form.password }}
+
+                {% for error in form.password.errors %}
+
+                    <div class="error-message">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- CONFIRM PASSWORD -->
+
+            <div class="form-group">
+
+                <label for="{{ form.confirm_password.id_for_label }}">
+                    Confirm Password
+                </label>
+
+                {{ form.confirm_password }}
+
+                {% for error in form.confirm_password.errors %}
+
+                    <div class="error-message">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- ROLE -->
+
+            <div class="form-group">
+
+                <label for="{{ form.role.id_for_label }}">
+                    Role
+                </label>
+
+                {{ form.role }}
+
+                {% for error in form.role.errors %}
+
+                    <div class="error-message">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+
+                <div class="role-info">
+
+                    <strong>Available roles:</strong>
+
+                    <br>
+
+                    Student — Can submit and track complaints.
+
+                    <br>
+
+                    Staff — Can handle assigned complaints.
+
+                    <br>
+
+                    Admin — Can manage the complete system.
+
+                </div>
+
+            </div>
+
+
+            <!-- BUTTONS -->
+
+            <div class="button-row">
+
+                <button
+                    type="submit"
+                    class="button"
+                >
+                    Create User
+                </button>
+
+
+                <a
+                    href="{% url 'admin_users' %}"
+                    class="button cancel-button"
+                >
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

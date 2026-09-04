@@ -1,0 +1,287 @@
+{% extends "complaints/base.html" %}
+
+{% block title %}Submit Issue{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        max-width: 650px;
+        margin: 0 auto;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+        color: var(--text-muted);
+        margin-bottom: 2rem;
+        font-size: 1rem;
+    }
+
+    .form-group p {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--text-main);
+        font-size: 0.9rem;
+    }
+
+    .form-group input[type="text"],
+    .form-group textarea,
+    .form-group input[type="file"] {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        font-family: inherit;
+        font-size: 0.95rem;
+        transition: var(--transition);
+        background: #f8fafc;
+    }
+
+    .form-group textarea {
+        min-height: 140px;
+        resize: vertical;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: white;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    }
+
+    /* Smart Alert */
+    .smart-alert {
+        display: flex;
+        gap: 1rem;
+        padding: 1.25rem;
+        background: rgba(79, 70, 229, 0.05);
+        border-left: 4px solid var(--primary);
+        border-radius: var(--radius-md);
+        margin-top: 1.5rem;
+    }
+
+    .smart-alert-icon {
+        font-size: 1.5rem;
+    }
+    
+    .smart-alert-text h4 {
+        color: var(--primary);
+        margin-bottom: 0.25rem;
+        font-size: 0.95rem;
+    }
+    .smart-alert-text p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    /* Voice Section */
+    .voice-box {
+        margin: 2rem 0;
+        padding: 1.5rem;
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius-lg);
+        text-align: center;
+        background: #fafafa;
+        transition: var(--transition);
+    }
+
+    .voice-box:hover {
+        border-color: rgba(79, 70, 229, 0.4);
+    }
+
+    .voice-controls {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin: 1rem 0;
+    }
+
+    .btn-voice {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: var(--transition);
+    }
+
+    .btn-voice:hover:not(:disabled) {
+        background: var(--primary-hover);
+        transform: scale(1.05);
+    }
+
+    .btn-voice:disabled {
+        background: var(--text-muted);
+        cursor: not-allowed;
+    }
+
+    .btn-clear {
+        background: transparent;
+        color: var(--text-muted);
+        border: 1px solid var(--border-color);
+        padding: 0.75rem 1.5rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .btn-clear:hover {
+        background: var(--border-color);
+        color: var(--text-main);
+    }
+
+    #voiceStatus {
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: block;
+        min-height: 20px;
+    }
+
+    .status-listening { color: var(--danger); animation: pulse 1.5s infinite; }
+    .status-success { color: var(--success); }
+    .status-error { color: var(--danger); }
+
+    .submit-button {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1.1rem;
+        margin-top: 1rem;
+        border-radius: var(--radius-md);
+        background: var(--text-main);
+    }
+    .submit-button:hover { background: #000; }
+
+    .back-link {
+        display: block;
+        text-align: center;
+        margin-top: 1.5rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    .back-link:hover { color: var(--primary); }
+
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="card">
+        <h1 class="page-title">Submit a New Issue</h1>
+        <p class="page-subtitle">Describe your issue in detail. You can type it or dictate using voice.</p>
+
+        <form method="post" enctype="multipart/form-data" class="form-group">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <div class="smart-alert">
+                <div class="smart-alert-icon">⚡</div>
+                <div class="smart-alert-text">
+                    <h4>Smart Priority Detection</h4>
+                    <p>No need to select priority manually. Our system will analyze your description and automatically assign the correct priority.</p>
+                </div>
+            </div>
+
+            <div class="voice-box">
+                <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem;">Voice Dictation</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Click start and speak clearly.</p>
+                
+                <div class="voice-controls">
+                    <button type="button" id="voiceButton" class="btn-voice">
+                        🎤 Start Voice
+                    </button>
+                    <button type="button" id="clearVoiceButton" class="btn-clear">
+                        Clear
+                    </button>
+                </div>
+                <span id="voiceStatus">Ready to listen</span>
+            </div>
+
+            <button type="submit" class="button submit-button">Submit Issue</button>
+        </form>
+
+        <a href="{% url 'my_complaints' %}" class="back-link">← Back to My Issues</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Keep your exact Javascript code here from your original file. It was perfectly fine! -->
+<script>
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const voiceButton = document.getElementById("voiceButton");
+    const clearVoiceButton = document.getElementById("clearVoiceButton");
+    const voiceStatus = document.getElementById("voiceStatus");
+    const descriptionField = document.getElementById("id_description");
+
+    if (!SpeechRecognition) {
+        voiceButton.disabled = true;
+        voiceStatus.textContent = "Voice-to-text is not supported in this browser.";
+        voiceStatus.className = "status-error";
+    } else {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = "en-IN";
+
+        voiceButton.addEventListener("click", function () {
+            try {
+                recognition.start();
+                voiceButton.innerHTML = "🛑 Listening...";
+                voiceStatus.textContent = "Listening... Please speak.";
+                voiceStatus.className = "status-listening";
+            } catch (error) { console.log(error); }
+        });
+
+        recognition.onresult = function (event) {
+            const transcript = event.results[0][0].transcript;
+            if (descriptionField.value.trim() !== "") {
+                descriptionField.value += " " + transcript;
+            } else {
+                descriptionField.value = transcript;
+            }
+            voiceStatus.textContent = "✓ Text added successfully.";
+            voiceStatus.className = "status-success";
+            voiceButton.innerHTML = "🎤 Start Voice";
+        };
+
+        recognition.onerror = function (event) {
+            voiceStatus.textContent = "Error: " + event.error;
+            voiceStatus.className = "status-error";
+            voiceButton.innerHTML = "🎤 Start Voice";
+        };
+
+        recognition.onend = function () {
+            voiceButton.innerHTML = "🎤 Start Voice";
+        };
+
+        clearVoiceButton.addEventListener("click", function () {
+            descriptionField.value = "";
+            voiceStatus.textContent = "Ready to listen";
+            voiceStatus.className = "";
+        });
+    }
+</script>
+{% endblock %}

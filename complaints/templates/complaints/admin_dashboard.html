@@ -1,0 +1,182 @@
+{% extends "complaints/base.html" %}
+
+{% block title %}Admin Control Panel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-title { font-size: 1.75rem; font-weight: 700; margin-bottom: 2rem; color: var(--text-main); }
+
+    /* Filter Bar */
+    .filter-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+        margin-bottom: 2rem;
+    }
+    
+    .filter-card h2 { font-size: 1.1rem; margin-bottom: 1rem; color: var(--text-main); }
+
+    .filter-form {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .form-control {
+        padding: 0.65rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        font-size: 0.9rem;
+        background: #f8fafc;
+        outline: none;
+        transition: var(--transition);
+        font-family: inherit;
+    }
+    .form-control:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 2px rgba(79,70,229,0.1); }
+    
+    .search-input { flex: 1; min-width: 250px; }
+    
+    .admin-issue-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-color);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .admin-issue-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 1.5rem;
+    }
+
+    /* THIS IS THE NEW HIGHLIGHT CLASS */
+    .issue-title-highlight { 
+        display: inline-block;
+        background: rgba(79, 70, 229, 0.1); 
+        color: var(--primary); 
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-md);
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        border: 1px solid rgba(79, 70, 229, 0.2);
+    }
+
+    .admin-issue-desc { color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; }
+
+    .admin-issue-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .admin-grid-item { display: flex; flex-direction: column; }
+    .admin-grid-label { color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 0.25rem; font-size: 0.75rem; }
+    .admin-grid-value { font-weight: 500; color: var(--text-main); }
+
+    .admin-issue-footer {
+        border-top: 1px solid var(--border-color);
+        padding-top: 1rem;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Admin Control Panel</h1>
+
+<div class="filter-card">
+    <h2>Search & Filter</h2>
+    <form method="get" class="filter-form">
+        
+        <input type="text" name="search" class="form-control search-input" placeholder="Search title, description..." value="{{ search_query }}">
+
+        <select name="priority" class="form-control">
+            <option value="">All Priorities</option>
+            <option value="HIGH" {% if priority_filter == "HIGH" %}selected{% endif %}>🔴 High</option>
+            <option value="MEDIUM" {% if priority_filter == "MEDIUM" %}selected{% endif %}>🟠 Medium</option>
+            <option value="LOW" {% if priority_filter == "LOW" %}selected{% endif %}>🟢 Low</option>
+        </select>
+
+        <select name="status" class="form-control">
+            <option value="">All Statuses</option>
+            <option value="submitted" {% if status_filter == "submitted" %}selected{% endif %}>Submitted</option>
+            <option value="assigned" {% if status_filter == "assigned" %}selected{% endif %}>Assigned</option>
+            <option value="in_progress" {% if status_filter == "in_progress" %}selected{% endif %}>In Progress</option>
+            <option value="resolved" {% if status_filter == "resolved" %}selected{% endif %}>Resolved</option>
+        </select>
+
+        <button type="submit" class="button">🔍 Filter</button>
+        <a href="{% url 'admin_dashboard' %}" class="button" style="background: white; color: var(--text-main); border: 1px solid var(--border-color);">Clear</a>
+    </form>
+</div>
+
+{% if complaints %}
+    {% for complaint in complaints %}
+        <div class="admin-issue-card">
+            
+            <div class="admin-issue-header">
+                <div style="flex: 1; padding-right: 20px;">
+                    <!-- Highlighted Title Here -->
+                    <div class="issue-title-highlight">{{ complaint.title }}</div>
+                    <div class="admin-issue-desc">{{ complaint.description }}</div>
+                </div>
+                <div style="text-align: right; min-width: 100px;">
+                    <div class="badge badge-{{ complaint.priority|lower }}">{{ complaint.priority }}</div>
+                    <div style="margin-top: 5px; font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">{{ complaint.get_status_display }}</div>
+                </div>
+            </div>
+
+            <div class="admin-issue-grid">
+                <div class="admin-grid-item">
+                    <span class="admin-grid-label">Category</span>
+                    <span class="admin-grid-value">{{ complaint.category }}</span>
+                </div>
+                <div class="admin-grid-item">
+                    <span class="admin-grid-label">Location</span>
+                    <span class="admin-grid-value">{{ complaint.location }}</span>
+                </div>
+                <div class="admin-grid-item">
+                    <span class="admin-grid-label">Submitted By</span>
+                    <span class="admin-grid-value">{{ complaint.submitted_by.username }}</span>
+                </div>
+                <div class="admin-grid-item">
+                    <span class="admin-grid-label">Assigned Staff</span>
+                    <span class="admin-grid-value">
+                        {% if complaint.assigned_to %}
+                            {{ complaint.assigned_to.username }}
+                        {% else %}
+                            <span style="color: var(--danger);">Unassigned</span>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+            {% if not complaint.assigned_to %}
+                <div class="admin-issue-footer">
+                    <a class="button" href="{% url 'assign_complaint' complaint.id %}">Assign Staff</a>
+                </div>
+            {% endif %}
+
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="card" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+        No complaints found matching your search criteria.
+    </div>
+{% endif %}
+{% endblock %}
