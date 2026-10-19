@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: smart-complaint-system
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn complaint_system.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
