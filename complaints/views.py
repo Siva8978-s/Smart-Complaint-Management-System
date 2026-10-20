@@ -263,14 +263,19 @@ def assign_complaint(request, complaint_id):
         form = AssignmentForm(request.POST, instance=complaint)
 
         if form.is_valid():
-            complaint = form.save(commit=False)
-            complaint.status = "assigned"
-            complaint.save()
-
-            return redirect("admin_dashboard")
+            if not form.cleaned_data.get("assigned_to"):
+                form.add_error("assigned_to", "Please select a staff member to assign.")
+            else:
+                complaint = form.save(commit=False)
+                complaint.status = "assigned"
+                complaint.save()
+                messages.success(request, f"Complaint assigned to {complaint.assigned_to.username} successfully.")
+                return redirect("admin_dashboard")
 
     else:
         form = AssignmentForm(instance=complaint)
+
+    has_verified_staff = form.fields["assigned_to"].queryset.exists()
 
     return render(
         request,
@@ -278,6 +283,7 @@ def assign_complaint(request, complaint_id):
         {
             "form": form,
             "complaint": complaint,
+            "has_verified_staff": has_verified_staff,
         }
     )
 

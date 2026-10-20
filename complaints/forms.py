@@ -48,13 +48,17 @@ class AssignmentForm(forms.ModelForm):
         # IMPORTANT:
         # Only staff members who are verified by admin
         # can be assigned to complaints.
-
         self.fields["assigned_to"].queryset = User.objects.filter(
             profile__role="staff",
             profile__is_verified=True
         )
 
         self.fields["assigned_to"].label = "Assign to Staff"
+        self.fields["assigned_to"].required = True
+        self.fields["assigned_to"].empty_label = "-- Select a Verified Staff Member --"
+        self.fields["assigned_to"].error_messages = {
+            "required": "Please select a staff member to assign this complaint to."
+        }
 
 
 # =========================================================
