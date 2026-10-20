@@ -1,10 +1,10 @@
 {% extends "complaints/base.html" %}
 
-{% block title %}My Issues{% endblock %}
+{% block title %}My Issues — ResolveHub{% endblock %}
 
 {% block extra_css %}
 <style>
-    .page-header {
+    .page-header-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -13,148 +13,255 @@
         gap: 1rem;
     }
 
-    .page-title { 
-        font-size: 1.75rem; 
-        font-weight: 700; 
-        color: var(--text-main); 
-        margin: 0; 
+    .page-title {
+        font-size: 1.85rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
     }
 
-    .table-container {
+    .table-container-card {
         background: white;
-        border-radius: var(--radius-lg);
+        border-radius: var(--radius-xl);
         box-shadow: var(--shadow-sm);
-        border: 1px solid var(--border-color);
+        border: 1px solid var(--card-border);
+        overflow: hidden;
+    }
+
+    /* Search & Filter Toolbar */
+    .table-toolbar {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--card-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+        background: #f8fafc;
+    }
+
+    .search-input-box {
+        position: relative;
+        max-width: 320px;
+        width: 100%;
+    }
+
+    .search-input-box input {
+        width: 100%;
+        padding: 0.65rem 1rem 0.65rem 2.25rem;
+        border: 1px solid var(--card-border);
+        border-radius: var(--radius-md);
+        font-size: 0.875rem;
+        background: white;
+        transition: var(--transition);
+        font-family: inherit;
+    }
+
+    .search-input-box input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+    }
+
+    .search-icon-svg {
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-subtle);
+        pointer-events: none;
+    }
+
+    .table-responsive-wrapper {
         overflow-x: auto;
     }
 
-    .styled-table {
+    .modern-data-table {
         width: 100%;
         border-collapse: collapse;
-        min-width: 800px;
+        min-width: 780px;
     }
 
-    .styled-table th {
+    .modern-data-table th {
         background: #f8fafc;
         color: var(--text-muted);
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        padding: 1rem 1.5rem;
-        text-align: left;
-        border-bottom: 1px solid var(--border-color);
-    }
-
-    .styled-table td {
-        padding: 1.25rem 1.5rem;
-        border-bottom: 1px solid var(--border-color);
-        font-size: 0.9rem;
-        color: var(--text-main);
-    }
-
-    .styled-table tbody tr {
-        transition: var(--transition);
-    }
-
-    .styled-table tbody tr:hover {
-        background: rgba(79, 70, 229, 0.02);
-    }
-
-    .styled-table tbody tr:last-child td {
-        border-bottom: none;
-    }
-
-    /* Make the title link look nice and hoverable */
-    .issue-title a { 
-        font-weight: 600; 
-        color: var(--primary); 
-        text-decoration: none;
-        transition: var(--transition);
-    }
-    
-    .issue-title a:hover {
-        color: var(--primary-hover);
-        text-decoration: underline;
-    }
-    
-    .empty-message {
-        text-align: center;
-        padding: 4rem 2rem;
-        background: white;
-        border-radius: var(--radius-lg);
-        border: 1px dashed var(--border-color);
-    }
-
-    /* Priority Badges - Solid Colors */
-    .priority-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.35rem 0.85rem;
-        border-radius: 9999px;
         font-size: 0.75rem;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: white;
-        box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        padding: 1rem 1.5rem;
+        text-align: left;
+        border-bottom: 1px solid var(--card-border);
     }
-    .badge-red { background-color: #ef4444; }    /* HIGH */
-    .badge-orange { background-color: #f97316; } /* MEDIUM */
-    .badge-green { background-color: #22c55e; }  /* LOW */
 
+    .modern-data-table td {
+        padding: 1.15rem 1.5rem;
+        border-bottom: 1px solid var(--card-border);
+        font-size: 0.9rem;
+        color: var(--text-main);
+        vertical-align: middle;
+    }
+
+    .modern-data-table tbody tr {
+        transition: var(--transition);
+    }
+
+    .modern-data-table tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    .modern-data-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .issue-title-link {
+        font-weight: 700;
+        color: var(--text-main);
+        text-decoration: none;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .issue-title-link:hover {
+        color: var(--primary);
+    }
+
+    .empty-state-box {
+        text-align: center;
+        padding: 4.5rem 2rem;
+        background: white;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1 class="page-title">My Issues</h1>
-    <a href="{% url 'submit_complaint' %}" class="button">+ Submit New Issue</a>
+<div class="page-header-row">
+    <div>
+        <h1 class="page-title">My Reported Issues</h1>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Track progress, communicate with staff, and view resolution remarks.</p>
+    </div>
+    <a href="{% url 'submit_complaint' %}" class="btn btn-primary" style="padding: 0.75rem 1.4rem;">
+        + Submit New Issue
+    </a>
 </div>
 
 {% if complaints %}
-    <div class="table-container">
-        <table class="styled-table">
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Category</th>
-                    <th>Priority</th>
-                    <th>Status</th>
-                    <th>Submitted On</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for c in complaints %}
+    <div class="table-container-card">
+        <!-- Live Filter Toolbar -->
+        <div class="table-toolbar">
+            <div class="search-input-box">
+                <svg class="search-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input type="text" id="tableSearch" placeholder="Search by title, location, category..." onkeyup="filterTable()">
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">
+                Showing <span id="visibleCount">{{ complaints|length }}</span> of {{ complaints|length }} Issues
+            </div>
+        </div>
+
+        <div class="table-responsive-wrapper">
+            <table class="modern-data-table" id="complaintsTable">
+                <thead>
                     <tr>
-                        <td class="issue-title">
-                            <a href="{% url 'complaint_detail' c.id %}">{{ c.title }}</a>
-                        </td>
-                        <td>{{ c.category }}</td>
-                        <td>
-                            <!-- Logic for Solid Colors -->
-                            {% if c.priority == "HIGH" %}
-                                <span class="priority-badge badge-red">{{ c.priority }}</span>
-                            {% elif c.priority == "MEDIUM" %}
-                                <span class="priority-badge badge-orange">{{ c.priority }}</span>
-                            {% else %}
-                                <span class="priority-badge badge-green">{{ c.priority }}</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <strong>{{ c.get_status_display }}</strong>
-                        </td>
-                        <td style="color: var(--text-muted);">{{ c.created_at|date:"M d, Y - H:i" }}</td>
+                        <th>Issue Title</th>
+                        <th>Category</th>
+                        <th>Priority</th>
+                        <th>Current Status</th>
+                        <th>Date Submitted</th>
+                        <th style="text-align: right;">Action</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for c in complaints %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'complaint_detail' c.id %}" class="issue-title-link">
+                                    {{ c.title }}
+                                </a>
+                                {% if c.comments.count > 0 %}
+                                    <span style="font-size: 0.75rem; background: #e0e7ff; color: #4338ca; font-weight: 700; padding: 0.1rem 0.45rem; border-radius: var(--radius-full);">
+                                        💬 {{ c.comments.count }}
+                                    </span>
+                                {% endif %}
+                                <div style="font-size: 0.775rem; color: var(--text-muted); margin-top: 0.2rem;">
+                                    📍 {{ c.location|default:"Campus" }}
+                                </div>
+                            </td>
+                            <td>
+                                <span style="font-weight: 600; color: #475569; background: #f1f5f9; padding: 0.2rem 0.6rem; border-radius: var(--radius-sm); font-size: 0.8rem;">
+                                    {{ c.category|default:"General" }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if c.priority == "HIGH" %}
+                                    <span class="priority-badge badge-priority-high">
+                                        <span class="priority-dot"></span> High
+                                    </span>
+                                {% elif c.priority == "MEDIUM" %}
+                                    <span class="priority-badge badge-priority-medium">
+                                        <span class="priority-dot"></span> Medium
+                                    </span>
+                                {% else %}
+                                    <span class="priority-badge badge-priority-low">
+                                        <span class="priority-dot"></span> Low
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="status-pill status-{{ c.status }}">
+                                    {{ c.get_status_display }}
+                                </span>
+                            </td>
+                            <td style="color: var(--text-muted); font-size: 0.85rem;">
+                                {{ c.created_at|date:"M j, Y • H:i" }}
+                            </td>
+                            <td style="text-align: right;">
+                                <a href="{% url 'complaint_detail' c.id %}" class="btn btn-secondary" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;">
+                                    View & Chat →
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 {% else %}
-    <div class="empty-message">
-        <h3 style="margin-bottom: 1rem; color: var(--text-muted);">No Issues Found</h3>
-        <p style="margin-bottom: 2rem;">You haven't submitted any complaints yet.</p>
-        <a href="{% url 'submit_complaint' %}" class="button">Submit Your First Issue</a>
+    <div class="table-container-card empty-state-box">
+        <div style="font-size: 2.75rem; margin-bottom: 0.85rem;">📂</div>
+        <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 0.5rem;">No Complaints Found</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 400px; margin: 0 auto 1.5rem;">
+            You have not submitted any complaints yet. When you report an issue, it will be tracked here in real time.
+        </p>
+        <a href="{% url 'submit_complaint' %}" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">
+            + Submit Your First Issue
+        </a>
     </div>
 {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function filterTable() {
+        const query = document.getElementById("tableSearch").value.toLowerCase();
+        const rows = document.querySelectorAll("#complaintsTable tbody tr");
+        let visible = 0;
+
+        rows.forEach(row => {
+            const text = row.innerText.toLowerCase();
+            if (text.includes(query)) {
+                row.style.display = "";
+                visible++;
+            } else {
+                row.style.display = "none";
+            }
+        });
+
+        const countEl = document.getElementById("visibleCount");
+        if (countEl) countEl.textContent = visible;
+    }
+</script>
 {% endblock %}

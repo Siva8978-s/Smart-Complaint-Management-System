@@ -1,258 +1,300 @@
 {% extends "complaints/base.html" %}
 
-{% block title %}Submit Issue{% endblock %}
+{% block title %}Submit New Issue — ResolveHub{% endblock %}
 
 {% block extra_css %}
 <style>
-    .form-container {
-        max-width: 650px;
+    .submit-page-wrapper {
+        max-width: 720px;
         margin: 0 auto;
     }
 
-    .page-title {
-        font-size: 2rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .page-subtitle {
-        color: var(--text-muted);
+    .form-hero-card {
+        background: white;
+        padding: 2.5rem;
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--card-border);
+        box-shadow: var(--shadow-sm);
         margin-bottom: 2rem;
-        font-size: 1rem;
     }
 
-    .form-group p {
+    .form-header-area {
+        margin-bottom: 2rem;
+        border-bottom: 1px solid var(--card-border);
+        padding-bottom: 1.5rem;
+    }
+
+    .form-title {
+        font-size: 1.85rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        margin-bottom: 0.35rem;
+    }
+
+    .form-subtitle {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+    }
+
+    /* Form Fields */
+    .field-group {
         margin-bottom: 1.5rem;
     }
 
-    .form-group label {
+    .field-group label {
         display: block;
-        font-weight: 600;
         margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 700;
         color: var(--text-main);
-        font-size: 0.9rem;
     }
 
-    .form-group input[type="text"],
-    .form-group textarea,
-    .form-group input[type="file"] {
+    .form-control-input,
+    .form-control-textarea {
         width: 100%;
-        padding: 0.75rem 1rem;
-        border: 1px solid var(--border-color);
+        padding: 0.85rem 1.15rem;
+        border: 1px solid var(--card-border);
         border-radius: var(--radius-md);
-        font-family: inherit;
         font-size: 0.95rem;
-        transition: var(--transition);
         background: #f8fafc;
+        font-family: inherit;
+        transition: var(--transition);
     }
 
-    .form-group textarea {
-        min-height: 140px;
+    .form-control-textarea {
+        min-height: 130px;
         resize: vertical;
+        line-height: 1.55;
     }
 
-    .form-group input:focus,
-    .form-group textarea:focus {
+    .form-control-input:focus,
+    .form-control-textarea:focus {
         outline: none;
         border-color: var(--primary);
         background: white;
         box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
     }
 
-    /* Smart Alert */
-    .smart-alert {
-        display: flex;
-        gap: 1rem;
-        padding: 1.25rem;
-        background: rgba(79, 70, 229, 0.05);
-        border-left: 4px solid var(--primary);
-        border-radius: var(--radius-md);
-        margin-top: 1.5rem;
-    }
-
-    .smart-alert-icon {
-        font-size: 1.5rem;
-    }
-    
-    .smart-alert-text h4 {
-        color: var(--primary);
-        margin-bottom: 0.25rem;
-        font-size: 0.95rem;
-    }
-    .smart-alert-text p {
-        margin: 0;
-        font-size: 0.85rem;
-        color: var(--text-muted);
-    }
-
-    /* Voice Section */
-    .voice-box {
-        margin: 2rem 0;
-        padding: 1.5rem;
-        border: 2px dashed var(--border-color);
+    /* Interactive Voice Recording Studio */
+    .voice-studio-box {
+        background: radial-gradient(100% 100% at 50% 0%, rgba(79, 70, 229, 0.05) 0%, rgba(248, 250, 252, 0.9) 100%);
+        border: 2px dashed #cbd5e1;
         border-radius: var(--radius-lg);
+        padding: 1.75rem;
         text-align: center;
-        background: #fafafa;
+        margin-bottom: 1.5rem;
         transition: var(--transition);
     }
 
-    .voice-box:hover {
-        border-color: rgba(79, 70, 229, 0.4);
+    .voice-studio-box.listening {
+        border-color: var(--danger);
+        background: #fef2f2;
     }
 
-    .voice-controls {
-        display: flex;
-        justify-content: center;
-        gap: 1rem;
-        margin: 1rem 0;
-    }
-
-    .btn-voice {
-        background: var(--primary);
-        color: white;
-        border: none;
-        padding: 0.75rem 1.5rem;
-        border-radius: 9999px;
-        font-weight: 600;
-        cursor: pointer;
+    .mic-button {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        transition: var(--transition);
-    }
-
-    .btn-voice:hover:not(:disabled) {
-        background: var(--primary-hover);
-        transform: scale(1.05);
-    }
-
-    .btn-voice:disabled {
-        background: var(--text-muted);
-        cursor: not-allowed;
-    }
-
-    .btn-clear {
-        background: transparent;
-        color: var(--text-muted);
-        border: 1px solid var(--border-color);
-        padding: 0.75rem 1.5rem;
-        border-radius: 9999px;
-        font-weight: 600;
+        padding: 0.75rem 1.75rem;
+        border-radius: var(--radius-full);
+        background: var(--primary);
+        color: white;
+        font-weight: 700;
+        font-size: 0.9rem;
+        border: none;
         cursor: pointer;
         transition: var(--transition);
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
     }
 
-    .btn-clear:hover {
-        background: var(--border-color);
-        color: var(--text-main);
+    .mic-button:hover:not(:disabled) {
+        background: var(--primary-hover);
+        transform: scale(1.03);
     }
 
-    #voiceStatus {
-        font-size: 0.875rem;
-        font-weight: 500;
+    .mic-button.recording {
+        background: var(--danger);
+        animation: pulseRecording 1.5s infinite;
+        box-shadow: 0 0 16px rgba(239, 68, 68, 0.5);
+    }
+
+    @keyframes pulseRecording {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    .voice-status-text {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-top: 0.75rem;
         display: block;
-        min-height: 20px;
     }
 
-    .status-listening { color: var(--danger); animation: pulse 1.5s infinite; }
-    .status-success { color: var(--success); }
-    .status-error { color: var(--danger); }
+    /* Live Smart Priority Preview Banner */
+    .smart-detection-banner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1.25rem;
+        background: #eef2ff;
+        border: 1px solid #c7d2fe;
+        border-radius: var(--radius-md);
+        margin-bottom: 1.75rem;
+        font-size: 0.875rem;
+        transition: var(--transition);
+    }
 
-    .submit-button {
+    .smart-banner-tag {
+        font-weight: 700;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .smart-detected-pill {
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        padding: 0.25rem 0.65rem;
+        border-radius: var(--radius-full);
+        background: white;
+        border: 1px solid #c7d2fe;
+        color: var(--primary);
+    }
+
+    /* Submit Button */
+    .btn-submit-large {
         width: 100%;
         padding: 1rem;
-        font-size: 1.1rem;
-        margin-top: 1rem;
+        font-size: 1.05rem;
+        font-weight: 700;
         border-radius: var(--radius-md);
-        background: var(--text-main);
-    }
-    .submit-button:hover { background: #000; }
-
-    .back-link {
-        display: block;
-        text-align: center;
-        margin-top: 1.5rem;
-        color: var(--text-muted);
-        text-decoration: none;
-        font-size: 0.9rem;
-        font-weight: 500;
-    }
-    .back-link:hover { color: var(--primary); }
-
-    @keyframes pulse {
-        0% { opacity: 1; }
-        50% { opacity: 0.5; }
-        100% { opacity: 1; }
+        box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="form-container">
-    <div class="card">
-        <h1 class="page-title">Submit a New Issue</h1>
-        <p class="page-subtitle">Describe your issue in detail. You can type it or dictate using voice.</p>
+<div class="submit-page-wrapper">
+    <div class="form-hero-card">
+        <div class="form-header-area">
+            <h1 class="form-title">Submit Service Request</h1>
+            <p class="form-subtitle">Type your complaint or use the voice recorder below. Our smart classifier handles priority detection.</p>
+        </div>
 
-        <form method="post" enctype="multipart/form-data" class="form-group">
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            {{ form.as_p }}
 
-            <div class="smart-alert">
-                <div class="smart-alert-icon">⚡</div>
-                <div class="smart-alert-text">
-                    <h4>Smart Priority Detection</h4>
-                    <p>No need to select priority manually. Our system will analyze your description and automatically assign the correct priority.</p>
-                </div>
+            <!-- Title -->
+            <div class="field-group">
+                <label for="id_title">Complaint Title *</label>
+                <input type="text" name="title" id="id_title" required class="form-control-input" placeholder="e.g., Short circuit in Lab 304, Water leaking near switchboard">
             </div>
 
-            <div class="voice-box">
-                <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem;">Voice Dictation</h3>
-                <p style="color: var(--text-muted); font-size: 0.9rem;">Click start and speak clearly.</p>
-                
-                <div class="voice-controls">
-                    <button type="button" id="voiceButton" class="btn-voice">
-                        🎤 Start Voice
-                    </button>
-                    <button type="button" id="clearVoiceButton" class="btn-clear">
-                        Clear
-                    </button>
-                </div>
-                <span id="voiceStatus">Ready to listen</span>
+            <!-- Location -->
+            <div class="field-group">
+                <label for="id_location">Location / Room Number *</label>
+                <input type="text" name="location" id="id_location" required class="form-control-input" placeholder="e.g., Block B, Room 204 or Main Library 1st Floor">
             </div>
 
-            <button type="submit" class="button submit-button">Submit Issue</button>
+            <!-- Voice Dictation Studio -->
+            <div class="voice-studio-box" id="voiceStudioBox">
+                <div style="font-size: 1.35rem; margin-bottom: 0.4rem;">🎙️</div>
+                <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem;">Voice-to-Text Dictation</h4>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Click below and describe your problem out loud.</p>
+
+                <div style="display: flex; justify-content: center; gap: 0.65rem;">
+                    <button type="button" id="voiceButton" class="mic-button">
+                        <span id="micIcon">🎤</span> <span id="micText">Start Voice Recording</span>
+                    </button>
+                    <button type="button" id="clearVoiceButton" class="btn btn-secondary" style="padding: 0.65rem 1rem; font-size: 0.85rem;">
+                        Clear Text
+                    </button>
+                </div>
+                <span id="voiceStatus" class="voice-status-text">Click to speak</span>
+            </div>
+
+            <!-- Description -->
+            <div class="field-group">
+                <label for="id_description">Detailed Description *</label>
+                <textarea name="description" id="id_description" required class="form-control-textarea" placeholder="Explain the exact issue. Mention any sparks, leaking water, smoke, or physical damage..."></textarea>
+            </div>
+
+            <!-- Real-Time Smart Priority Preview -->
+            <div class="smart-detection-banner" id="smartPreviewBanner">
+                <div class="smart-banner-tag">
+                    <span>⚡ Smart Priority Engine:</span>
+                    <span id="previewCategoryText" style="color: var(--text-main); font-weight: 600;">Analyzing input...</span>
+                </div>
+                <span class="smart-detected-pill" id="previewPriorityPill">Auto-Detect</span>
+            </div>
+
+            <!-- Image Upload -->
+            <div class="field-group">
+                <label for="id_image">Attach Photo Evidence (Optional)</label>
+                <input type="file" name="image" id="id_image" accept="image/*" class="form-control-input">
+                <span style="font-size: 0.775rem; color: var(--text-muted); margin-top: 0.25rem; display: block;">Supports JPG, PNG up to 10MB</span>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-submit-large">
+                Submit Issue Now →
+            </button>
         </form>
 
-        <a href="{% url 'my_complaints' %}" class="back-link">← Back to My Issues</a>
+        <div style="text-align: center; margin-top: 1.75rem;">
+            <a href="{% url 'my_complaints' %}" style="font-size: 0.875rem; color: var(--text-muted); font-weight: 600; text-decoration: none;">
+                ← Back to My Issues
+            </a>
+        </div>
     </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
-<!-- Keep your exact Javascript code here from your original file. It was perfectly fine! -->
 <script>
+    // -------------------------------------------------------------
+    // 1. VOICE-TO-TEXT SPEECH RECOGNITION
+    // -------------------------------------------------------------
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const voiceButton = document.getElementById("voiceButton");
     const clearVoiceButton = document.getElementById("clearVoiceButton");
     const voiceStatus = document.getElementById("voiceStatus");
+    const voiceStudioBox = document.getElementById("voiceStudioBox");
     const descriptionField = document.getElementById("id_description");
+    const micIcon = document.getElementById("micIcon");
+    const micText = document.getElementById("micText");
+
+    let isRecording = false;
+    let recognition = null;
 
     if (!SpeechRecognition) {
         voiceButton.disabled = true;
-        voiceStatus.textContent = "Voice-to-text is not supported in this browser.";
-        voiceStatus.className = "status-error";
+        voiceStatus.textContent = "Voice dictation is supported in Chrome, Edge, and Safari.";
     } else {
-        const recognition = new SpeechRecognition();
+        recognition = new SpeechRecognition();
         recognition.continuous = false;
         recognition.interimResults = false;
         recognition.lang = "en-IN";
 
         voiceButton.addEventListener("click", function () {
-            try {
-                recognition.start();
-                voiceButton.innerHTML = "🛑 Listening...";
-                voiceStatus.textContent = "Listening... Please speak.";
-                voiceStatus.className = "status-listening";
-            } catch (error) { console.log(error); }
+            if (!isRecording) {
+                try {
+                    recognition.start();
+                    isRecording = true;
+                    voiceButton.classList.add("recording");
+                    voiceStudioBox.classList.add("listening");
+                    micIcon.textContent = "🛑";
+                    micText.textContent = "Listening... Speak now";
+                    voiceStatus.textContent = "Listening to your voice... Speak clearly into mic.";
+                } catch (e) {
+                    console.log(e);
+                }
+            } else {
+                recognition.stop();
+            }
         });
 
         recognition.onresult = function (event) {
@@ -262,26 +304,76 @@
             } else {
                 descriptionField.value = transcript;
             }
-            voiceStatus.textContent = "✓ Text added successfully.";
-            voiceStatus.className = "status-success";
-            voiceButton.innerHTML = "🎤 Start Voice";
+            voiceStatus.textContent = "✓ Text captured successfully!";
+            updateSmartPriorityPreview();
         };
 
         recognition.onerror = function (event) {
-            voiceStatus.textContent = "Error: " + event.error;
-            voiceStatus.className = "status-error";
-            voiceButton.innerHTML = "🎤 Start Voice";
+            voiceStatus.textContent = "Microphone error: " + event.error;
+            resetVoiceButton();
         };
 
         recognition.onend = function () {
-            voiceButton.innerHTML = "🎤 Start Voice";
+            resetVoiceButton();
         };
 
         clearVoiceButton.addEventListener("click", function () {
             descriptionField.value = "";
             voiceStatus.textContent = "Ready to listen";
-            voiceStatus.className = "";
+            updateSmartPriorityPreview();
         });
     }
+
+    function resetVoiceButton() {
+        isRecording = false;
+        voiceButton.classList.remove("recording");
+        voiceStudioBox.classList.remove("listening");
+        micIcon.textContent = "🎤";
+        micText.textContent = "Start Voice Recording";
+    }
+
+    // -------------------------------------------------------------
+    // 2. REAL-TIME CLIENT-SIDE PRIORITY SCANNER PREVIEW
+    // -------------------------------------------------------------
+    const highKeywords = ["fire", "spark", "sparking", "smoke", "gas leak", "flood", "flooding", "short circuit", "exposed wire", "live wire", "collapse", "burst pipe", "emergency", "shock", "dangerous"];
+    const mediumKeywords = ["leak", "leaking", "broken", "wifi", "fan", "tap", "flush", "switch", "door", "window", "light", "internet"];
+
+    const previewCategoryText = document.getElementById("previewCategoryText");
+    const previewPriorityPill = document.getElementById("previewPriorityPill");
+
+    function updateSmartPriorityPreview() {
+        const text = (descriptionField.value + " " + document.getElementById("id_title").value).toLowerCase();
+
+        if (text.trim().length === 0) {
+            previewCategoryText.textContent = "Type issue description to auto-classify...";
+            previewPriorityPill.textContent = "Auto-Detect";
+            previewPriorityPill.style.background = "white";
+            previewPriorityPill.style.color = "var(--primary)";
+            return;
+        }
+
+        const isHigh = highKeywords.some(kw => text.includes(kw));
+        const isMed = mediumKeywords.some(kw => text.includes(kw));
+
+        if (isHigh) {
+            previewCategoryText.textContent = "Critical Hazard Detected";
+            previewPriorityPill.textContent = "HIGH PRIORITY (URGENT)";
+            previewPriorityPill.style.background = "#ef4444";
+            previewPriorityPill.style.color = "white";
+        } else if (isMed) {
+            previewCategoryText.textContent = "Standard Repair Detected";
+            previewPriorityPill.textContent = "MEDIUM PRIORITY";
+            previewPriorityPill.style.background = "#f59e0b";
+            previewPriorityPill.style.color = "white";
+        } else {
+            previewCategoryText.textContent = "General Facility Maintenance";
+            previewPriorityPill.textContent = "LOW PRIORITY";
+            previewPriorityPill.style.background = "#10b981";
+            previewPriorityPill.style.color = "white";
+        }
+    }
+
+    descriptionField.addEventListener("input", updateSmartPriorityPreview);
+    document.getElementById("id_title").addEventListener("input", updateSmartPriorityPreview);
 </script>
 {% endblock %}

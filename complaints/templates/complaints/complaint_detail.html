@@ -1,237 +1,537 @@
 {% extends "complaints/base.html" %}
 
-{% block title %}Issue Details & Chat{% endblock %}
+{% block title %}{{ complaint.title }} — ResolveHub{% endblock %}
 
 {% block extra_css %}
 <style>
-    .page-container {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 2rem;
-        max-width: 900px;
-        margin: 0 auto;
-    }
-
-    /* Issue Summary Box */
-    .issue-summary {
-        background: white;
-        padding: 2rem;
-        border-radius: var(--radius-lg);
-        box-shadow: var(--shadow-sm);
-        border: 1px solid var(--border-color);
-    }
-    
-    .issue-header {
+    .ticket-nav-bar {
         display: flex;
+        align-items: center;
         justify-content: space-between;
-        align-items: flex-start;
-        border-bottom: 1px solid var(--border-color);
-        padding-bottom: 1rem;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 0.75rem;
     }
 
-    .meta-grid {
+    .back-btn-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.875rem;
+        transition: var(--transition);
+    }
+
+    .back-btn-link:hover { color: var(--primary); }
+
+    /* Timeline Stepper */
+    .timeline-card {
+        background: white;
+        border: 1px solid var(--card-border);
+        border-radius: var(--radius-xl);
+        padding: 1.5rem 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .stepper-track {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+    }
+
+    .stepper-track::before {
+        content: '';
+        position: absolute;
+        top: 15px;
+        left: 30px;
+        right: 30px;
+        height: 3px;
+        background: #e2e8f0;
+        z-index: 1;
+    }
+
+    .step-node {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        background: white;
+        padding: 0 0.5rem;
+    }
+
+    .step-circle {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #f1f5f9;
+        border: 2px solid #cbd5e1;
+        color: #64748b;
+        font-size: 0.8rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.45rem;
+        transition: var(--transition);
+    }
+
+    .step-node.completed .step-circle {
+        background: #10b981;
+        border-color: #10b981;
+        color: white;
+    }
+
+    .step-node.current .step-circle {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: white;
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2);
+    }
+
+    .step-label {
+        font-size: 0.775rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .step-node.completed .step-label,
+    .step-node.current .step-label {
+        color: var(--text-main);
+    }
+
+    /* 2-Column Split Workspace */
+    .ticket-workspace {
+        display: grid;
+        grid-template-columns: 1fr 1.15fr;
+        gap: 2rem;
+        align-items: start;
+    }
+
+    /* Left: Dossier Box */
+    .dossier-card {
+        background: white;
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--card-border);
+        box-shadow: var(--shadow-sm);
+        padding: 2rem;
+    }
+
+    .dossier-header {
+        border-bottom: 1px solid var(--card-border);
+        padding-bottom: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .dossier-title {
+        font-size: 1.45rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.75rem;
+        line-height: 1.3;
+    }
+
+    .dossier-badge-row {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        flex-wrap: wrap;
+    }
+
+    .dossier-description-box {
+        background: #f8fafc;
+        border-radius: var(--radius-md);
+        padding: 1.25rem;
+        border: 1px solid #f1f5f9;
+        font-size: 0.925rem;
+        color: var(--text-main);
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .metadata-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-        font-size: 0.9rem;
+        gap: 1.25rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.875rem;
     }
-    
-    .meta-label { color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
-    .meta-value { font-weight: 500; color: var(--text-main); }
 
-    /* Chat Section */
-    .chat-container {
-        background: #f8fafc;
-        border-radius: var(--radius-lg);
-        border: 1px solid var(--border-color);
+    .meta-item-label {
+        font-size: 0.725rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.25rem;
+    }
+
+    .meta-item-val {
+        font-weight: 600;
+        color: var(--text-main);
+    }
+
+    /* Image Attachment Preview */
+    .evidence-image-preview {
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        border: 1px solid var(--card-border);
+        margin-top: 1rem;
+    }
+
+    .evidence-image-preview img {
+        width: 100%;
+        max-height: 250px;
+        object-fit: cover;
+        display: block;
+    }
+
+    /* Resolution Remarks Banner */
+    .resolution-remarks-banner {
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
+        border-radius: var(--radius-md);
+        padding: 1.25rem;
+        margin-top: 1.5rem;
+    }
+
+    .resolution-banner-title {
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: #065f46;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.35rem;
+    }
+
+    /* Right: Chat Feed */
+    .chat-card {
+        background: white;
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--card-border);
+        box-shadow: var(--shadow-sm);
         display: flex;
         flex-direction: column;
-        height: 500px; /* Fixed height for the chat area */
+        height: 640px;
         overflow: hidden;
     }
 
-    .chat-header {
-        background: white;
-        padding: 1rem 1.5rem;
-        border-bottom: 1px solid var(--border-color);
-        font-weight: 600;
+    .chat-card-header {
+        background: #ffffff;
+        padding: 1.15rem 1.5rem;
+        border-bottom: 1px solid var(--card-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .chat-header-title {
+        font-size: 1rem;
+        font-weight: 800;
         display: flex;
         align-items: center;
         gap: 0.5rem;
     }
 
-    .chat-messages {
+    .chat-message-feed {
         flex: 1;
         padding: 1.5rem;
         overflow-y: auto;
         display: flex;
         flex-direction: column;
-        gap: 1rem;
+        gap: 1.15rem;
+        background: #f8fafc;
     }
 
-    .message-wrapper {
+    .chat-message-row {
         display: flex;
         flex-direction: column;
-        max-width: 80%;
+        max-width: 82%;
     }
 
-    /* Sent by the currently logged-in user */
-    .message-sent {
+    .msg-sent {
         align-self: flex-end;
         align-items: flex-end;
     }
-    .message-sent .message-bubble {
-        background: var(--primary);
-        color: white;
-        border-radius: 16px 16px 0px 16px;
-    }
 
-    /* Sent by someone else (staff/student) */
-    .message-received {
+    .msg-received {
         align-self: flex-start;
         align-items: flex-start;
     }
-    .message-received .message-bubble {
-        background: white;
-        color: var(--text-main);
-        border: 1px solid var(--border-color);
-        border-radius: 16px 16px 16px 0px;
+
+    .msg-bubble {
+        padding: 0.85rem 1.15rem;
+        font-size: 0.925rem;
+        line-height: 1.5;
+        box-shadow: var(--shadow-xs);
     }
 
-    .message-bubble {
-        padding: 0.75rem 1rem;
-        font-size: 0.95rem;
-        box-shadow: var(--shadow-sm);
-    }
-
-    .message-meta {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        margin-top: 0.25rem;
-        padding: 0 0.25rem;
-    }
-
-    /* Comment Form Area */
-    .chat-input-area {
-        background: white;
-        padding: 1rem 1.5rem;
-        border-top: 1px solid var(--border-color);
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-    }
-    
-    .chat-input-area form {
-        display: flex;
-        width: 100%;
-        gap: 1rem;
-        align-items: center;
-    }
-    
-    .btn-send {
+    .msg-sent .msg-bubble {
         background: var(--primary);
         color: white;
-        border: none;
-        padding: 0.75rem 1.5rem;
-        border-radius: var(--radius-md);
-        font-weight: 600;
-        cursor: pointer;
-        transition: var(--transition);
-        height: 100%;
+        border-radius: 16px 16px 2px 16px;
     }
-    
-    .btn-send:hover { background: var(--primary-hover); }
+
+    .msg-received .msg-bubble {
+        background: white;
+        color: var(--text-main);
+        border: 1px solid var(--card-border);
+        border-radius: 16px 16px 16px 2px;
+    }
+
+    .msg-sender-info {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 0.3rem;
+        padding: 0 0.35rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .chat-input-bar {
+        background: white;
+        padding: 1rem 1.25rem;
+        border-top: 1px solid var(--card-border);
+    }
+
+    .chat-input-bar form {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+    }
+
+    .chat-input-bar textarea,
+    .chat-input-bar input[type="text"] {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--card-border);
+        border-radius: var(--radius-md);
+        font-size: 0.9rem;
+        font-family: inherit;
+        background: #f8fafc;
+        resize: none;
+        transition: var(--transition);
+    }
+
+    .chat-input-bar textarea:focus,
+    .chat-input-bar input[type="text"]:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: white;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+    }
+
+    @media (max-width: 900px) {
+        .ticket-workspace { grid-template-columns: 1fr; }
+        .chat-card { height: 500px; }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div style="margin-bottom: 1rem;">
-    <!-- Back button based on role -->
+<!-- Back Breadcrumb -->
+<div class="ticket-nav-bar">
     {% if request.user.profile.role == 'student' %}
-        <a href="{% url 'my_complaints' %}" style="text-decoration: none; color: var(--primary);">← Back to My Issues</a>
+        <a href="{% url 'my_complaints' %}" class="back-btn-link">← Back to My Issues</a>
     {% elif request.user.profile.role == 'staff' %}
-        <a href="{% url 'staff_dashboard' %}" style="text-decoration: none; color: var(--primary);">← Back to Dashboard</a>
+        <a href="{% url 'staff_dashboard' %}" class="back-btn-link">← Back to Staff Dashboard</a>
     {% else %}
-        <a href="{% url 'admin_dashboard' %}" style="text-decoration: none; color: var(--primary);">← Back to Dashboard</a>
+        <a href="{% url 'admin_dashboard' %}" class="back-btn-link">← Back to Admin Overview</a>
     {% endif %}
+
+    <div style="font-size: 0.8rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">
+        Ticket ID: #{{ complaint.id }}
+    </div>
 </div>
 
-<div class="page-container">
-    
-    <!-- 1. Issue Details -->
-    <div class="issue-summary">
-        <div class="issue-header">
-            <div>
-                <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem;">{{ complaint.title }}</h1>
-                <p style="color: var(--text-muted);">{{ complaint.description }}</p>
-            </div>
-            <div style="text-align: right;">
-                <div class="badge badge-{{ complaint.priority|lower }}">{{ complaint.priority }}</div><br>
-                <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">{{ complaint.get_status_display }}</span>
-            </div>
+<!-- Lifecycle Stepper Card -->
+<div class="timeline-card">
+    <div class="stepper-track">
+        <!-- 1. Submitted -->
+        <div class="step-node {% if complaint.status in 'submitted,assigned,in_progress,resolved' %}completed{% endif %}">
+            <div class="step-circle">✓</div>
+            <div class="step-label">Submitted</div>
         </div>
 
-        <div class="meta-grid">
-            <div><span class="meta-label">Category</span><br><span class="meta-value">{{ complaint.category }}</span></div>
-            <div><span class="meta-label">Location</span><br><span class="meta-value">{{ complaint.location }}</span></div>
-            <div><span class="meta-label">Submitted By</span><br><span class="meta-value">{{ complaint.submitted_by.username }}</span></div>
-            <div>
-                <span class="meta-label">Assigned To</span><br>
-                <span class="meta-value">{% if complaint.assigned_to %}{{ complaint.assigned_to.username }}{% else %}Pending{% endif %}</span>
-            </div>
+        <!-- 2. Assigned -->
+        <div class="step-node {% if complaint.status in 'assigned,in_progress,resolved' %}completed{% elif complaint.status == 'submitted' %}current{% endif %}">
+            <div class="step-circle">{% if complaint.status in 'assigned,in_progress,resolved' %}✓{% else %}2{% endif %}</div>
+            <div class="step-label">Assigned</div>
+        </div>
+
+        <!-- 3. In Progress -->
+        <div class="step-node {% if complaint.status in 'in_progress,resolved' %}completed{% elif complaint.status == 'assigned' %}current{% endif %}">
+            <div class="step-circle">{% if complaint.status in 'in_progress,resolved' %}✓{% else %}3{% endif %}</div>
+            <div class="step-label">In Progress</div>
+        </div>
+
+        <!-- 4. Resolved -->
+        <div class="step-node {% if complaint.status == 'resolved' %}completed{% elif complaint.status == 'in_progress' %}current{% endif %}">
+            <div class="step-circle">{% if complaint.status == 'resolved' %}✓{% else %}4{% endif %}</div>
+            <div class="step-label">Resolved</div>
         </div>
     </div>
+</div>
 
-    <!-- 2. Chat Interface -->
-    <div class="chat-container">
-        <div class="chat-header">
-            💬 Conversation Thread
+<!-- 2-Column Workspace -->
+<div class="ticket-workspace">
+    <!-- Left Column: Dossier -->
+    <div class="dossier-card">
+        <div class="dossier-header">
+            <h1 class="dossier-title">{{ complaint.title }}</h1>
+            <div class="dossier-badge-row">
+                <!-- Priority -->
+                {% if complaint.priority == "HIGH" %}
+                    <span class="priority-badge badge-priority-high">
+                        <span class="priority-dot"></span> High Priority
+                    </span>
+                {% elif complaint.priority == "MEDIUM" %}
+                    <span class="priority-badge badge-priority-medium">
+                        <span class="priority-dot"></span> Medium
+                    </span>
+                {% else %}
+                    <span class="priority-badge badge-priority-low">
+                        <span class="priority-dot"></span> Low
+                    </span>
+                {% endif %}
+
+                <!-- Status -->
+                <span class="status-pill status-{{ complaint.status }}">
+                    {{ complaint.get_status_display }}
+                </span>
+
+                <span style="background: #f1f5f9; color: #475569; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.65rem; border-radius: var(--radius-full);">
+                    {{ complaint.category|default:"General" }}
+                </span>
+            </div>
         </div>
 
-        <div class="chat-messages" id="chatBox">
+        <div class="meta-item-label">Description</div>
+        <div class="dossier-description-box">
+            {{ complaint.description }}
+        </div>
+
+        <div class="metadata-grid">
+            <div>
+                <div class="meta-item-label">Location / Room</div>
+                <div class="meta-item-val">📍 {{ complaint.location|default:"Not specified" }}</div>
+            </div>
+            <div>
+                <div class="meta-item-label">Submitted By</div>
+                <div class="meta-item-val">👤 {{ complaint.submitted_by.username }}</div>
+            </div>
+            <div>
+                <div class="meta-item-label">Assigned Technician</div>
+                <div class="meta-item-val">
+                    {% if complaint.assigned_to %}
+                        🛠️ <strong>{{ complaint.assigned_to.username }}</strong>
+                    {% else %}
+                        <span style="color: var(--text-muted); font-style: italic;">Awaiting Assignment</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div>
+                <div class="meta-item-label">Date Submitted</div>
+                <div class="meta-item-val">📅 {{ complaint.created_at|date:"M j, Y • H:i" }}</div>
+            </div>
+        </div>
+
+        <!-- Evidence Photo Attachment -->
+        {% if complaint.image %}
+            <div class="meta-item-label" style="margin-top: 1.25rem;">Attached Photo Evidence</div>
+            <div class="evidence-image-preview">
+                <a href="{{ complaint.image.url }}" target="_blank" title="Click to view full image">
+                    <img src="{{ complaint.image.url }}" alt="Evidence Photo">
+                </a>
+            </div>
+        {% endif %}
+
+        <!-- Resolution Remarks (if resolved) -->
+        {% if complaint.status == 'resolved' %}
+            <div class="resolution-remarks-banner">
+                <div class="resolution-banner-title">✓ Resolution Remarks by Technician:</div>
+                <div style="font-size: 0.9rem; color: #065f46; line-height: 1.5;">
+                    {{ complaint.resolution_remarks|default:"Work completed and verified." }}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Right Column: Live Chat -->
+    <div class="chat-card">
+        <div class="chat-card-header">
+            <div class="chat-header-title">
+                <span>💬 Discussion Thread</span>
+            </div>
+            <div style="font-size: 0.775rem; color: var(--text-muted); font-weight: 600;">
+                {{ comments|length }} Messages
+            </div>
+        </div>
+
+        <div class="chat-message-feed" id="chatFeed">
             {% if comments %}
                 {% for comment in comments %}
-                    
                     {% if comment.author == request.user %}
-                        <!-- Sent by Logged in User -->
-                        <div class="message-wrapper message-sent">
-                            <div class="message-bubble">{{ comment.text }}</div>
-                            <div class="message-meta">You • {{ comment.created_at|date:"M d, H:i" }}</div>
+                        <!-- Current User Sent -->
+                        <div class="chat-message-row msg-sent">
+                            <div class="msg-bubble">{{ comment.text }}</div>
+                            <div class="msg-sender-info">
+                                <span>You</span>
+                                <span>•</span>
+                                <span>{{ comment.created_at|date:"M j, H:i" }}</span>
+                            </div>
                         </div>
                     {% else %}
-                        <!-- Received from other User -->
-                        <div class="message-wrapper message-received">
-                            <div class="message-bubble">{{ comment.text }}</div>
-                            <div class="message-meta">{{ comment.author.username }} • {{ comment.created_at|date:"M d, H:i" }}</div>
+                        <!-- Received Message -->
+                        <div class="chat-message-row msg-received">
+                            <div class="msg-bubble">{{ comment.text }}</div>
+                            <div class="msg-sender-info">
+                                <strong>{{ comment.author.username }}</strong>
+                                {% if comment.author.profile %}
+                                    <span class="role-badge role-{{ comment.author.profile.role }}">
+                                        {{ comment.author.profile.role }}
+                                    </span>
+                                {% endif %}
+                                <span>•</span>
+                                <span>{{ comment.created_at|date:"M j, H:i" }}</span>
+                            </div>
                         </div>
                     {% endif %}
-
                 {% endfor %}
             {% else %}
-                <div style="text-align: center; color: var(--text-muted); margin-top: 2rem;">
-                    No messages yet. Send a message below to start the conversation!
+                <div style="text-align: center; color: var(--text-muted); margin: auto 0; padding: 2rem;">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">💭</div>
+                    <div style="font-weight: 700; color: var(--text-main); margin-bottom: 0.25rem;">No messages yet</div>
+                    <p style="font-size: 0.85rem;">Send an update or question below to start the conversation.</p>
                 </div>
             {% endif %}
         </div>
 
-        <!-- Chat Form -->
-        <div class="chat-input-area">
+        <!-- Chat Input Form -->
+        <div class="chat-input-bar">
             <form method="post">
                 {% csrf_token %}
-                <div style="flex: 1;">
-                    {{ form.as_p }}
-                </div>
-                <button type="submit" class="btn-send">Send ✈️</button>
+                <input type="text" name="text" required placeholder="Type a message or update..." autocomplete="off">
+                <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.25rem;">
+                    Send ✈️
+                </button>
             </form>
         </div>
     </div>
-
 </div>
+{% endblock %}
 
-<!-- Auto-scroll chat to bottom -->
+{% block extra_js %}
 <script>
-    const chatBox = document.getElementById("chatBox");
-    chatBox.scrollTop = chatBox.scrollHeight;
+    // Auto-scroll chat feed to latest message
+    const chatFeed = document.getElementById("chatFeed");
+    if (chatFeed) {
+        chatFeed.scrollTop = chatFeed.scrollHeight;
+    }
 </script>
 {% endblock %}

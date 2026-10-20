@@ -3,247 +3,601 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Smart Complaint System{% endblock %}</title>
+    <title>{% block title %}Smart Complaint & Service System{% endblock %}</title>
     
-    <!-- Modern Font: Inter -->
+    <!-- Modern Typography: Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            /* Premium Color Palette */
-            --primary: #4f46e5;      /* Indigo 600 */
-            --primary-hover: #4338ca; /* Indigo 700 */
-            --bg-color: #f8fafc;     /* Slate 50 */
+            /* Core Brand Colors */
+            --primary: #4f46e5;         /* Electric Indigo */
+            --primary-hover: #4338ca;   /* Deep Indigo */
+            --primary-light: #eef2ff;   /* Indigo 50 */
+            --primary-glow: rgba(79, 70, 229, 0.18);
+            
+            /* Modern Neutral Scale */
+            --bg-color: #f8fafc;        /* Slate 50 */
             --card-bg: #ffffff;
-            --text-main: #0f172a;    /* Slate 900 */
-            --text-muted: #64748b;   /* Slate 500 */
-            --border-color: #e2e8f0; /* Slate 200 */
+            --card-border: #e2e8f0;     /* Slate 200 */
+            --text-main: #0f172a;       /* Slate 900 */
+            --text-muted: #64748b;      /* Slate 500 */
+            --text-subtle: #94a3b8;     /* Slate 400 */
             
-            /* Semantic Colors */
-            --success: #10b981; /* Emerald 500 */
-            --warning: #f59e0b; /* Amber 500 */
-            --danger: #ef4444;  /* Red 500 */
+            /* Semantic Feedback */
+            --success: #10b981;
+            --success-bg: #ecfdf5;
+            --success-border: #a7f3d0;
+            --warning: #f59e0b;
+            --warning-bg: #fffbeb;
+            --warning-border: #fde68a;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+            --danger-border: #fecaca;
+            --info: #0284c7;
+            --info-bg: #f0f9ff;
+            --info-border: #bae6fd;
             
-            /* Shadows & Effects */
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            /* Layered Shadows */
+            --shadow-xs: 0 1px 2px 0 rgba(15, 23, 42, 0.04);
+            --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.08), 0 1px 2px -1px rgba(15, 23, 42, 0.08);
+            --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.07);
+            --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+            --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.10), 0 8px 10px -6px rgba(15, 23, 42, 0.06);
+            --shadow-glow: 0 0 24px -4px var(--primary-glow);
             
-            /* Structural */
-            --radius-md: 0.5rem;
-            --radius-lg: 0.75rem;
-            --radius-xl: 1rem;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            /* Radius & Layout */
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --radius-xl: 20px;
+            --radius-full: 9999px;
+            --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        * {
+        *, *::before, *::after {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* =========================
-           NAVBAR (Glassmorphism)
-        ========================= */
-        .navbar {
+        /* ========================================================
+           HEADER & NAVIGATION (Frosted Glassmorphic Header)
+        ======================================================== */
+        .site-header {
             position: sticky;
             top: 0;
-            z-index: 50;
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-color);
-            padding: 1rem 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.85);
             transition: var(--transition);
         }
 
-        .brand {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--primary);
-            letter-spacing: -0.025em;
+        .navbar {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 0.85rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .brand-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.65rem;
             text-decoration: none;
+            color: var(--text-main);
+            font-weight: 800;
+            font-size: 1.15rem;
+            letter-spacing: -0.03em;
+            transition: var(--transition);
+        }
+
+        .brand-link:hover {
+            transform: translateY(-1px);
+        }
+
+        .brand-logo-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.35);
+        }
+
+        .brand-text-accent {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-center {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .nav-item {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+            padding: 0.5rem 0.85rem;
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .nav-item:hover {
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            background: var(--primary-light);
+            font-weight: 700;
         }
 
         .nav-right {
             display: flex;
             align-items: center;
-            gap: 1.5rem;
+            gap: 0.75rem;
         }
 
-        .welcome {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .nav-links {
+        /* User Profile Pill */
+        .user-pill {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.65rem;
+            padding: 0.35rem 0.65rem 0.35rem 0.35rem;
+            background: #f1f5f9;
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-full);
         }
 
-        .nav-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: var(--radius-md);
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: var(--transition);
+        .user-avatar-circle {
+            width: 28px;
+            height: 28px;
+            border-radius: var(--radius-full);
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
         }
 
-        .nav-links a:hover {
-            color: var(--primary);
-            background: rgba(79, 70, 229, 0.05);
+        .user-info-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
         }
 
-        /* =========================
-           GLOBAL COMPONENTS
-        ========================= */
-        .container {
-            max-width: 1100px;
-            margin: 2rem auto;
-            padding: 0 1.5rem;
-            animation: fadeInUp 0.5s ease-out;
+        .user-name-text {
+            font-size: 0.825rem;
+            font-weight: 700;
+            color: var(--text-main);
         }
 
-        .card {
-            background: var(--card-bg);
-            padding: 2rem;
-            margin-bottom: 1.5rem;
-            border-radius: var(--radius-lg);
-            border: 1px solid rgba(0,0,0,0.05);
-            box-shadow: var(--shadow-md);
-            transition: var(--transition);
-        }
-        
-        .card:hover {
-            box-shadow: var(--shadow-lg);
+        .role-badge {
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: var(--radius-full);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
         }
 
-        /* Modern Buttons */
-        .button {
+        .role-admin { background: #e0e7ff; color: #4338ca; }
+        .role-staff { background: #fef3c7; color: #b45309; }
+        .role-student { background: #ecfdf5; color: #047857; }
+
+        /* ========================================================
+           GLOBAL BUTTONS
+        ======================================================== */
+        .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 0.625rem 1.25rem;
-            background-color: var(--primary);
-            color: white;
-            text-decoration: none;
-            border: none;
+            gap: 0.5rem;
+            padding: 0.65rem 1.25rem;
             border-radius: var(--radius-md);
             font-size: 0.875rem;
             font-weight: 600;
+            text-decoration: none;
+            border: 1px solid transparent;
             cursor: pointer;
             transition: var(--transition);
-            box-shadow: var(--shadow-sm);
+            white-space: nowrap;
         }
 
-        .button:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-2px);
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 1px 2px rgba(79, 70, 229, 0.2), 0 4px 12px rgba(79, 70, 229, 0.25);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1.5px);
+            box-shadow: 0 4px 6px rgba(79, 70, 229, 0.25), 0 8px 16px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text-main);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow-xs);
+        }
+
+        .btn-secondary:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            transform: translateY(-1px);
+        }
+
+        .btn-logout {
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            padding: 0.45rem 0.85rem;
+            font-size: 0.8rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn-logout:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* ========================================================
+           FLASH TOASTS / MESSAGES
+        ======================================================== */
+        .toast-container {
+            max-width: 1240px;
+            margin: 1rem auto 0;
+            padding: 0 1.5rem;
+        }
+
+        .toast-message {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.85rem 1.25rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            box-shadow: var(--shadow-sm);
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .toast-success { background: var(--success-bg); color: #065f46; border: 1px solid var(--success-border); }
+        .toast-error { background: var(--danger-bg); color: #991b1b; border: 1px solid var(--danger-border); }
+        .toast-warning { background: var(--warning-bg); color: #92400e; border: 1px solid var(--warning-border); }
+        .toast-info { background: var(--info-bg); color: #075985; border: 1px solid var(--info-border); }
+
+        .toast-close-btn {
+            background: transparent;
+            border: none;
+            color: inherit;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding-left: 1rem;
+            opacity: 0.6;
+        }
+
+        .toast-close-btn:hover { opacity: 1; }
+
+        /* ========================================================
+           STATUS & PRIORITY BADGES (World-Class SaaS Standard)
+        ======================================================== */
+        .priority-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.3rem 0.75rem;
+            border-radius: var(--radius-full);
+            font-size: 0.725rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .priority-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .badge-priority-high {
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+        .badge-priority-high .priority-dot { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+
+        .badge-priority-medium {
+            background: #fffbeb;
+            color: #b45309;
+            border: 1px solid #fde68a;
+        }
+        .badge-priority-medium .priority-dot { background: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
+
+        .badge-priority-low {
+            background: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+        }
+        .badge-priority-low .priority-dot { background: #10b981; box-shadow: 0 0 8px #10b981; }
+
+        /* Status Pills */
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.3rem 0.75rem;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .status-submitted { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+        .status-assigned { background: #ede9fe; color: #6d28d9; border: 1px solid #ddd6fe; }
+        .status-in_progress { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+        .status-resolved { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+
+        /* Backward compatibility with existing templates */
+        .badge { display: inline-flex; align-items: center; padding: 0.3rem 0.75rem; border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        .badge-high { background: #ef4444; color: white; }
+        .badge-medium { background: #f59e0b; color: white; }
+        .badge-low { background: #10b981; color: white; }
+        .badge-red { background: #ef4444; color: white; }
+        .badge-orange { background: #f59e0b; color: white; }
+        .badge-green { background: #10b981; color: white; }
+        .button {
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 0.4rem; padding: 0.65rem 1.25rem; background-color: var(--primary);
+            color: white; text-decoration: none; border: none; border-radius: var(--radius-md);
+            font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: var(--transition);
+        }
+        .button:hover { background-color: var(--primary-hover); transform: translateY(-1.5px); }
+
+        /* Main Container */
+        .main-content {
+            flex: 1;
+            max-width: 1240px;
+            width: 100%;
+            margin: 1.5rem auto 3rem;
+            padding: 0 1.5rem;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        /* Card Component */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow-sm);
+            padding: 1.75rem;
+            transition: var(--transition);
+        }
+
+        .card:hover {
             box-shadow: var(--shadow-md);
         }
 
-        .logout-button {
-            background-color: transparent;
-            color: var(--danger);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            padding: 0.5rem 1rem;
-            border-radius: var(--radius-md);
-            font-size: 0.875rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
+        /* ========================================================
+           FOOTER
+        ======================================================== */
+        .site-footer {
+            background: white;
+            border-top: 1px solid var(--card-border);
+            padding: 2rem 1.5rem;
+            margin-top: auto;
         }
 
-        .logout-button:hover {
-            background-color: var(--danger);
-            color: white;
-        }
-
-        /* Typography globally */
-        h1, h2, h3 {
-            color: var(--text-main);
-            letter-spacing: -0.025em;
-        }
-
-        footer {
-            text-align: center;
-            padding: 2rem;
-            margin-top: 4rem;
+        .footer-inner {
+            max-width: 1240px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
-            font-size: 0.875rem;
-            border-top: 1px solid var(--border-color);
         }
 
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(10px); }
+        .system-status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.3rem 0.75rem;
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-pulse-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
+            animation: pulseSlow 2s infinite;
+        }
+
+        @keyframes pulseSlow {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Mobile Layout */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.75rem;
+            }
+            .nav-center {
+                overflow-x: auto;
+                padding-bottom: 0.35rem;
+            }
+            .nav-right {
+                justify-content: space-between;
+            }
+            .footer-inner {
+                flex-direction: column;
+                text-align: center;
+            }
         }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
 
-    <nav class="navbar">
-        <a href="{% url 'home' %}" class="brand">Smart Complaint System</a>
+    <!-- Header Navigation -->
+    <header class="site-header">
+        <nav class="navbar">
+            <a href="{% url 'home' %}" class="brand-link">
+                <div class="brand-logo-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+                <span>Resolve<span class="brand-text-accent">Hub</span></span>
+            </a>
 
-        {% if user.is_authenticated %}
-        <div class="nav-right">
-            <span class="welcome">Hi, {{ user.username }}</span>
-            <div class="nav-links">
+            {% if user.is_authenticated %}
+            <div class="nav-center">
                 {% if user.profile.role == "student" %}
-                    <a href="{% url 'student_dashboard' %}">Dashboard</a>
-                    <a href="{% url 'submit_complaint' %}">Submit Issue</a>
-                    <a href="{% url 'my_complaints' %}">My Issues</a>
+                    <a href="{% url 'student_dashboard' %}" class="nav-item">Dashboard</a>
+                    <a href="{% url 'submit_complaint' %}" class="nav-item">+ New Issue</a>
+                    <a href="{% url 'my_complaints' %}" class="nav-item">My Issues</a>
                 {% elif user.profile.role == "staff" %}
-                    <a href="{% url 'staff_dashboard' %}">Dashboard</a>
+                    <a href="{% url 'staff_dashboard' %}" class="nav-item">Staff Dashboard</a>
                 {% elif user.profile.role == "admin" %}
-                    <a href="{% url 'admin_dashboard' %}">Dashboard</a>
-
-                    <a href="{% url 'admin_analytics' %}">Analytics</a>
-
-                    <a href="{% url 'admin_users' %}">Users</a>
-                    <a href="{% url 'admin_staff' %}">Staff</a>
+                    <a href="{% url 'admin_dashboard' %}" class="nav-item">Overview</a>
+                    <a href="{% url 'admin_analytics' %}" class="nav-item">Analytics</a>
+                    <a href="{% url 'admin_users' %}" class="nav-item">Users</a>
+                    <a href="{% url 'admin_staff' %}" class="nav-item">Staff Team</a>
                 {% endif %}
+            </div>
+
+            <div class="nav-right">
+                <div class="user-pill">
+                    <div class="user-avatar-circle">
+                        {{ user.username|slice:":1" }}
+                    </div>
+                    <div class="user-info-meta">
+                        <span class="user-name-text">{{ user.username }}</span>
+                        <span class="role-badge role-{{ user.profile.role }}">
+                            {{ user.profile.role }}
+                        </span>
+                    </div>
+                </div>
 
                 <form method="post" action="{% url 'logout' %}" style="display: inline;">
                     {% csrf_token %}
-                    <button type="submit" class="logout-button">Logout</button>
+                    <button type="submit" class="btn-logout" title="Sign out of your account">Logout</button>
                 </form>
             </div>
-        </div>
-        {% else %}
-        <div class="nav-right">
-            <div class="nav-links">
-                <a href="{% url 'login' %}">Login</a>
-                <a href="{% url 'register' %}" class="button" style="padding: 0.45rem 1.1rem; font-size: 0.875rem;">Register</a>
+            {% else %}
+            <div class="nav-right">
+                <a href="{% url 'login' %}" class="nav-item">Log In</a>
+                <a href="{% url 'register' %}" class="btn btn-primary" style="padding: 0.5rem 1.1rem; font-size: 0.825rem;">
+                    Get Started Free
+                </a>
             </div>
-        </div>
-        {% endif %}
-    </nav>
+            {% endif %}
+        </nav>
+    </header>
 
-    <main class="container">
+    <!-- Global Toast Alerts -->
+    {% if messages %}
+    <div class="toast-container">
+        {% for message in messages %}
+        <div class="toast-message toast-{{ message.tags|default:'info' }}" role="alert">
+            <div style="display: flex; align-items: center; gap: 0.65rem;">
+                {% if message.tags == 'success' %}
+                    <span>✓</span>
+                {% elif message.tags == 'error' %}
+                    <span>⚠</span>
+                {% else %}
+                    <span>ℹ</span>
+                {% endif %}
+                <span>{{ message }}</span>
+            </div>
+            <button class="toast-close-btn" onclick="this.parentElement.remove();">&times;</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Page Content -->
+    <main class="main-content">
         {% block content %}{% endblock %}
     </main>
 
-    <footer>
-        &copy; {% now "Y" %} Smart Complaint & Service Management System.
+    <!-- Professional Footer -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <strong>ResolveHub</strong> — Smart Campus Issue & Service Management System
+            </div>
+            <div class="system-status-indicator">
+                <span class="status-pulse-dot"></span>
+                <span>Operational • All Services Online</span>
+            </div>
+            <div>
+                &copy; {% now "Y" %} ResolveHub. Enterprise Grade Resolution.
+            </div>
+        </div>
     </footer>
 
     {% block extra_js %}{% endblock %}

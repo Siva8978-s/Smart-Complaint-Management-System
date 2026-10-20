@@ -1,160 +1,255 @@
 {% extends "complaints/base.html" %}
 
-{% block title %}
-Login - Smart Complaint Management System
-{% endblock %}
+{% block title %}Sign In — ResolveHub{% endblock %}
 
 {% block extra_css %}
 <style>
-    .login-wrapper {
-        min-height: 70vh;
+    .auth-wrapper {
+        min-height: 75vh;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 2rem 1rem;
+        padding: 2.5rem 1rem;
     }
 
-    .login-card {
+    .auth-card {
         width: 100%;
-        max-width: 420px;
+        max-width: 440px;
         background: white;
-        padding: 35px;
+        padding: 2.5rem 2.25rem;
         border-radius: var(--radius-xl);
-        box-shadow: var(--shadow-md);
-        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--card-border);
     }
 
-    .login-card h1 {
+    .auth-header {
         text-align: center;
-        margin-bottom: 8px;
-        font-size: 1.75rem;
-        font-weight: 700;
+        margin-bottom: 2rem;
     }
 
-    .login-subtitle {
-        text-align: center;
-        color: var(--text-muted);
-        margin-bottom: 25px;
-        font-size: 0.95rem;
-    }
-
-    .login-card form p {
-        margin-bottom: 18px;
-    }
-
-    .login-card label {
-        display: block;
-        margin-bottom: 6px;
-        font-weight: 600;
-        font-size: 0.875rem;
-    }
-
-    .login-card input {
-        width: 100%;
-        padding: 10px 14px;
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-md);
-        font-size: 0.95rem;
-        transition: var(--transition);
-    }
-
-    .login-card input:focus {
-        outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
-    }
-
-    .login-button {
-        width: 100%;
-        padding: 12px;
-        margin-top: 10px;
-        background: var(--primary);
+    .auth-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
         color: white;
-        border: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+    }
+
+    .auth-title {
+        font-size: 1.65rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        margin-bottom: 0.4rem;
+    }
+
+    .auth-subtitle {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    /* 1-Click Demo Accounts Strip */
+    .demo-accounts-box {
+        background: #f8fafc;
+        border: 1px dashed #cbd5e1;
+        border-radius: var(--radius-lg);
+        padding: 1rem;
+        margin-bottom: 1.75rem;
+        text-align: center;
+    }
+
+    .demo-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        margin-bottom: 0.65rem;
+    }
+
+    .demo-buttons-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+    }
+
+    .btn-demo-pill {
+        padding: 0.45rem 0.5rem;
+        font-size: 0.775rem;
+        font-weight: 700;
         border-radius: var(--radius-md);
-        font-size: 1rem;
-        font-weight: 600;
+        border: 1px solid var(--card-border);
+        background: white;
+        color: var(--text-main);
         cursor: pointer;
         transition: var(--transition);
+        box-shadow: var(--shadow-xs);
     }
 
-    .login-button:hover {
-        background: var(--primary-hover);
+    .btn-demo-pill:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+        background: var(--primary-light);
         transform: translateY(-1px);
     }
 
-    .error-message {
-        background: #fee2e2;
-        color: #b91c1c;
-        padding: 10px 14px;
-        border-radius: var(--radius-md);
-        margin-bottom: 18px;
-        text-align: center;
-        font-size: 0.9rem;
+    /* Form Fields */
+    .form-group {
+        margin-bottom: 1.25rem;
     }
 
-    .signup-prompt {
+    .form-group label {
+        display: block;
+        margin-bottom: 0.45rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-main);
+    }
+
+    .input-field-wrapper {
+        position: relative;
+    }
+
+    .auth-card input[type="text"],
+    .auth-card input[type="password"] {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--card-border);
+        border-radius: var(--radius-md);
+        font-size: 0.925rem;
+        background: #f8fafc;
+        transition: var(--transition);
+        font-family: inherit;
+    }
+
+    .auth-card input:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: white;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    }
+
+    .btn-submit-auth {
+        width: 100%;
+        padding: 0.85rem;
+        margin-top: 0.75rem;
+        font-size: 0.95rem;
+        font-weight: 700;
+        border-radius: var(--radius-md);
+    }
+
+    .auth-footer-prompt {
         text-align: center;
-        margin-top: 20px;
-        font-size: 0.9rem;
+        margin-top: 1.5rem;
+        font-size: 0.875rem;
         color: var(--text-muted);
     }
 
-    .signup-prompt a {
+    .auth-footer-prompt a {
         color: var(--primary);
-        font-weight: 600;
+        font-weight: 700;
         text-decoration: none;
     }
 
-    .signup-prompt a:hover {
+    .auth-footer-prompt a:hover {
         text-decoration: underline;
     }
 
-    .home-link {
-        display: block;
-        text-align: center;
-        margin-top: 15px;
-        color: var(--text-muted);
-        text-decoration: none;
+    .error-banner {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #b91c1c;
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius-md);
+        margin-bottom: 1.25rem;
         font-size: 0.85rem;
-    }
-
-    .home-link:hover {
-        color: var(--primary);
+        font-weight: 500;
+        text-align: center;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="login-wrapper">
-    <div class="login-card">
-        <h1>Login</h1>
-        <p class="login-subtitle">
-            Smart Complaint Management System
-        </p>
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/>
+                </svg>
+            </div>
+            <h1 class="auth-title">Welcome Back</h1>
+            <p class="auth-subtitle">Sign in to manage and track your campus requests</p>
+        </div>
+
+        <!-- 1-Click Demo Accounts -->
+        <div class="demo-accounts-box">
+            <div class="demo-label">⚡ 1-Click Demo Accounts (Instant Fill)</div>
+            <div class="demo-buttons-row">
+                <button type="button" class="btn-demo-pill" onclick="fillCredentials('admin', 'Root@8978299519')">
+                    👑 Admin
+                </button>
+                <button type="button" class="btn-demo-pill" onclick="fillCredentials('student1', 'Student@123')">
+                    🎓 Student
+                </button>
+                <button type="button" class="btn-demo-pill" onclick="fillCredentials('staff1', 'Staff@123')">
+                    🛠️ Staff
+                </button>
+            </div>
+        </div>
 
         {% if form.errors %}
-            <div class="error-message">
-                Invalid username or password. Please try again.
+            <div class="error-banner">
+                Invalid username or password. Please try again or use a demo account above.
             </div>
         {% endif %}
 
-        <form method="post">
+        <form method="post" id="loginForm">
             {% csrf_token %}
-            {{ form.as_p }}
 
-            <button type="submit" class="login-button">
-                Login
+            <div class="form-group">
+                <label for="id_username">Username</label>
+                <input type="text" name="username" id="id_username" required autofocus placeholder="Enter your username">
+            </div>
+
+            <div class="form-group">
+                <label for="id_password">Password</label>
+                <div class="input-field-wrapper">
+                    <input type="password" name="password" id="id_password" required placeholder="Enter your password">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-submit-auth">
+                Sign In →
             </button>
         </form>
 
-        <p class="signup-prompt">
+        <p class="auth-footer-prompt">
             Don't have an account? <a href="{% url 'register' %}">Sign up as Student</a>
         </p>
-
-        <a href="{% url 'home' %}" class="home-link">
-            ← Back to Home
-        </a>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function fillCredentials(user, pass) {
+        document.getElementById('id_username').value = user;
+        document.getElementById('id_password').value = pass;
+        
+        // Visual confirmation highlight
+        const userEl = document.getElementById('id_username');
+        const passEl = document.getElementById('id_password');
+        userEl.style.borderColor = 'var(--primary)';
+        passEl.style.borderColor = 'var(--primary)';
+        setTimeout(() => {
+            userEl.style.borderColor = '';
+            passEl.style.borderColor = '';
+        }, 1200);
+    }
+</script>
 {% endblock %}

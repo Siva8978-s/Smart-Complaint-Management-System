@@ -1,100 +1,186 @@
 {% extends "complaints/base.html" %}
 
-{% block title %}Admin Analytics{% endblock %}
+{% block title %}Operations Analytics — ResolveHub{% endblock %}
 
 {% block extra_css %}
 <style>
-    .analytics-grid {
+    .analytics-header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .analytics-title {
+        font-size: 1.85rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        margin-bottom: 0.25rem;
+    }
+
+    .analytics-kpi-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1.5rem;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1.15rem;
         margin-bottom: 2.5rem;
     }
 
-    .stat-card {
+    .analytics-stat-card {
         background: white;
-        padding: 1.5rem;
-        border-radius: var(--radius-lg);
+        padding: 1.35rem 1.5rem;
+        border-radius: var(--radius-xl);
         box-shadow: var(--shadow-sm);
-        border: 1px solid var(--border-color);
-        display: flex;
-        flex-direction: column;
+        border: 1px solid var(--card-border);
+        transition: var(--transition);
     }
 
-    .stat-card h3 { margin: 0; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
-    .stat-number { font-size: 2.25rem; font-weight: 700; color: var(--primary); margin-top: 0.5rem; }
+    .analytics-stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
 
-    .charts-grid {
+    .stat-label-tiny {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.4rem;
+    }
+
+    .stat-value-huge {
+        font-size: 2rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1;
+    }
+
+    .charts-grid-layout {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-        gap: 2rem;
+        grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+        gap: 1.75rem;
     }
 
-    .chart-card {
+    .chart-panel-card {
         background: white;
         padding: 2rem;
-        border-radius: var(--radius-lg);
+        border-radius: var(--radius-xl);
         box-shadow: var(--shadow-sm);
-        border: 1px solid var(--border-color);
+        border: 1px solid var(--card-border);
     }
-    
-    .chart-card h2 { font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--text-main); }
-    .chart-container { position: relative; height: 320px; }
 
-    @media (max-width: 600px) {
-        .charts-grid { grid-template-columns: 1fr; }
+    .chart-panel-title {
+        font-size: 1.15rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.02em;
+    }
+
+    .chart-box-container {
+        position: relative;
+        height: 300px;
+    }
+
+    @media (max-width: 900px) {
+        .analytics-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        .charts-grid-layout { grid-template-columns: 1fr; }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<h1 style="margin-bottom: 0.5rem;">Analytics Overview</h1>
-<p style="color: var(--text-muted); margin-bottom: 2rem;">Real-time performance and system metrics.</p>
-
-<div class="analytics-grid">
-    <div class="stat-card"><h3>Total Complaints</h3><div class="stat-number">{{ total_complaints }}</div></div>
-    <div class="stat-card"><h3>Submitted</h3><div class="stat-number">{{ submitted_count }}</div></div>
-    <div class="stat-card"><h3>Assigned</h3><div class="stat-number">{{ assigned_count }}</div></div>
-    <div class="stat-card"><h3>In Progress</h3><div class="stat-number">{{ in_progress_count }}</div></div>
-    <div class="stat-card"><h3>Resolved</h3><div class="stat-number">{{ resolved_count }}</div></div>
+<div class="analytics-header-row">
+    <div>
+        <h1 class="analytics-title">Campus Operations Analytics</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Real-time performance metrics, priority distribution, and SLA resolution tracking.</p>
+    </div>
+    <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">
+        ← Back to Overview
+    </a>
 </div>
 
-<div class="charts-grid">
-    <div class="chart-card">
-        <h2>Priority Distribution</h2>
-        <div class="chart-container"><canvas id="priorityChart"></canvas></div>
+<!-- 5 Top KPI Cards -->
+<div class="analytics-kpi-grid">
+    <div class="analytics-stat-card">
+        <div class="stat-label-tiny">Total Requests</div>
+        <div class="stat-value-huge" style="color: var(--primary);">{{ total_complaints }}</div>
     </div>
-    <div class="chart-card">
-        <h2>Status Distribution</h2>
-        <div class="chart-container"><canvas id="statusChart"></canvas></div>
+    <div class="analytics-stat-card">
+        <div class="stat-label-tiny">Submitted</div>
+        <div class="stat-value-huge" style="color: #64748b;">{{ submitted_count }}</div>
     </div>
-    <div class="chart-card">
-        <h2>Complaints by Category</h2>
-        <div class="chart-container"><canvas id="categoryChart"></canvas></div>
+    <div class="analytics-stat-card">
+        <div class="stat-label-tiny">Assigned</div>
+        <div class="stat-value-huge" style="color: #7c3aed;">{{ assigned_count }}</div>
+    </div>
+    <div class="analytics-stat-card">
+        <div class="stat-label-tiny">In Progress</div>
+        <div class="stat-value-huge" style="color: #d97706;">{{ in_progress_count }}</div>
+    </div>
+    <div class="analytics-stat-card">
+        <div class="stat-label-tiny">Resolved</div>
+        <div class="stat-value-huge" style="color: #059669;">{{ resolved_count }}</div>
     </div>
 </div>
 
-<!-- Chart.js -->
+<!-- Interactive Chart Panels -->
+<div class="charts-grid-layout">
+    <div class="chart-panel-card">
+        <h2 class="chart-panel-title">Priority Breakdown</h2>
+        <div class="chart-box-container">
+            <canvas id="priorityChart"></canvas>
+        </div>
+    </div>
+
+    <div class="chart-panel-card">
+        <h2 class="chart-panel-title">Lifecycle Status Distribution</h2>
+        <div class="chart-box-container">
+            <canvas id="statusChart"></canvas>
+        </div>
+    </div>
+
+    <div class="chart-panel-card" style="grid-column: 1 / -1;">
+        <h2 class="chart-panel-title">Issues by Department / Category</h2>
+        <div class="chart-box-container">
+            <canvas id="categoryChart"></canvas>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Keep your exact Chart.js initialization code here. 
-    // Just change the colors inside the datasets if you want it to match perfectly.
-    
-    // PRIORITY
+    Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+    Chart.defaults.color = "#64748b";
+
+    // 1. PRIORITY DONUT CHART
     new Chart(document.getElementById("priorityChart"), {
         type: "doughnut",
         data: {
-            labels: ["HIGH", "MEDIUM", "LOW"],
+            labels: ["High Priority", "Medium Priority", "Low Priority"],
             datasets: [{
                 data: [{{ high_count }}, {{ medium_count }}, {{ low_count }}],
                 backgroundColor: ['#ef4444', '#f59e0b', '#10b981'],
-                borderWidth: 0
+                borderWidth: 2,
+                borderColor: '#ffffff',
+                hoverOffset: 4
             }]
         },
-        options: { responsive: true, maintainAspectRatio: false, cutout: '70%' }
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '72%',
+            plugins: {
+                legend: { position: 'bottom', labels: { padding: 18, usePointStyle: true, boxWidth: 8 } }
+            }
+        }
     });
 
-    // STATUS
+    // 2. STATUS BAR CHART
     new Chart(document.getElementById("statusChart"), {
         type: "bar",
         data: {
@@ -102,29 +188,45 @@
             datasets: [{
                 label: "Complaints",
                 data: [{{ submitted_count }}, {{ assigned_count }}, {{ in_progress_count }}, {{ resolved_count }}],
-                backgroundColor: '#4f46e5',
-                borderRadius: 4
+                backgroundColor: ['#94a3b8', '#a855f7', '#f59e0b', '#10b981'],
+                borderRadius: 8,
+                barThickness: 34
             }]
         },
-        options: { responsive: true, maintainAspectRatio: false }
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { stepSize: 1 } },
+                x: { grid: { display: false } }
+            }
+        }
     });
 
-    // CATEGORY
-    const categoryLabels = [{% for item in category_data %}"{{ item.category|escapejs }}",{% endfor %}];
-    const categoryCounts = [{% for item in category_data %}{{ item.total }},{% endfor %}];
-    
+    // 3. CATEGORY HORIZONTAL BAR CHART
     new Chart(document.getElementById("categoryChart"), {
         type: "bar",
         data: {
-            labels: categoryLabels,
+            labels: [{% for c in category_counts %}"{{ c.category|default:'General' }}",{% endfor %}],
             datasets: [{
-                label: "Complaints",
-                data: categoryCounts,
-                backgroundColor: '#8b5cf6',
-                borderRadius: 4
+                label: "Complaints Count",
+                data: [{% for c in category_counts %}{{ c.count }},{% endfor %}],
+                backgroundColor: '#4f46e5',
+                borderRadius: 8,
+                barThickness: 28
             }]
         },
-        options: { responsive: true, maintainAspectRatio: false }
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { stepSize: 1 } },
+                y: { grid: { display: false } }
+            }
+        }
     });
 </script>
 {% endblock %}

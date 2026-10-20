@@ -1,115 +1,184 @@
 {% extends "complaints/base.html" %}
 
-{% block title %}Admin Control Panel{% endblock %}
+{% block title %}Admin Operations Hub — ResolveHub{% endblock %}
 
 {% block extra_css %}
 <style>
-    .page-title { font-size: 1.75rem; font-weight: 700; margin-bottom: 2rem; color: var(--text-main); }
-
-    /* Filter Bar */
-    .filter-card {
+    .admin-header-card {
         background: white;
-        padding: 1.5rem;
-        border-radius: var(--radius-lg);
+        padding: 2rem 2.25rem;
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--card-border);
         box-shadow: var(--shadow-sm);
-        border: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        flex-wrap: wrap;
         margin-bottom: 2rem;
     }
-    
-    .filter-card h2 { font-size: 1.1rem; margin-bottom: 1rem; color: var(--text-main); }
+
+    .admin-title {
+        font-size: 1.85rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        margin-bottom: 0.35rem;
+    }
+
+    .admin-subtitle {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+    }
+
+    /* Filter Toolbar Card */
+    .filter-card {
+        background: white;
+        padding: 1.5rem 1.75rem;
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--card-border);
+        margin-bottom: 2rem;
+    }
 
     .filter-form {
         display: flex;
-        gap: 1rem;
+        gap: 0.85rem;
         flex-wrap: wrap;
         align-items: center;
     }
 
     .form-control {
-        padding: 0.65rem 1rem;
-        border: 1px solid var(--border-color);
+        padding: 0.7rem 1.1rem;
+        border: 1px solid var(--card-border);
         border-radius: var(--radius-md);
-        font-size: 0.9rem;
+        font-size: 0.875rem;
         background: #f8fafc;
         outline: none;
         transition: var(--transition);
         font-family: inherit;
     }
-    .form-control:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 2px rgba(79,70,229,0.1); }
-    
-    .search-input { flex: 1; min-width: 250px; }
-    
-    .admin-issue-card {
+
+    .form-control:focus {
+        border-color: var(--primary);
         background: white;
-        border-radius: var(--radius-lg);
-        border: 1px solid var(--border-color);
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        box-shadow: var(--shadow-sm);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
     }
-    
-    .admin-issue-header {
+
+    .search-input {
+        flex: 1;
+        min-width: 260px;
+    }
+
+    /* Admin Issue Card */
+    .admin-ticket-card {
+        background: white;
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--card-border);
+        padding: 1.75rem;
+        margin-bottom: 1.25rem;
+        box-shadow: var(--shadow-xs);
+        transition: var(--transition);
+    }
+
+    .admin-ticket-card:hover {
+        border-color: rgba(79, 70, 229, 0.35);
+        box-shadow: var(--shadow-md);
+    }
+
+    .admin-ticket-top {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        border-bottom: 1px solid var(--border-color);
-        padding-bottom: 1.5rem;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
     }
 
-    /* THIS IS THE NEW HIGHLIGHT CLASS */
-    .issue-title-highlight { 
-        display: inline-block;
-        background: rgba(79, 70, 229, 0.1); 
-        color: var(--primary); 
-        padding: 0.5rem 1rem;
-        border-radius: var(--radius-md);
-        font-size: 1.15rem;
-        font-weight: 700;
-        margin-bottom: 0.75rem;
-        border: 1px solid rgba(79, 70, 229, 0.2);
+    .admin-title-link {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: var(--text-main);
+        text-decoration: none;
+        letter-spacing: -0.02em;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
     }
 
-    .admin-issue-desc { color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; }
+    .admin-title-link:hover {
+        color: var(--primary);
+    }
 
-    .admin-issue-grid {
+    .admin-ticket-meta {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        grid-template-columns: repeat(4, 1fr);
         gap: 1rem;
+        background: #f8fafc;
+        border: 1px solid #f1f5f9;
+        border-radius: var(--radius-md);
+        padding: 0.9rem 1.25rem;
+        margin-bottom: 1.25rem;
         font-size: 0.85rem;
     }
-    
-    .admin-grid-item { display: flex; flex-direction: column; }
-    .admin-grid-label { color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 0.25rem; font-size: 0.75rem; }
-    .admin-grid-value { font-weight: 500; color: var(--text-main); }
 
-    .admin-issue-footer {
-        border-top: 1px solid var(--border-color);
+    .admin-meta-label {
+        font-size: 0.725rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 0.2rem;
+    }
+
+    .admin-meta-val {
+        font-weight: 600;
+        color: var(--text-main);
+    }
+
+    .admin-ticket-footer {
+        border-top: 1px solid var(--card-border);
         padding-top: 1rem;
         display: flex;
-        justify-content: flex-end;
         align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
         gap: 1rem;
+    }
+
+    @media (max-width: 900px) {
+        .admin-ticket-meta { grid-template-columns: repeat(2, 1fr); }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<h1 class="page-title">Admin Control Panel</h1>
+<!-- Admin Header -->
+<div class="admin-header-card">
+    <div>
+        <h1 class="admin-title">Campus Operations Overview</h1>
+        <p class="admin-subtitle">Triage complaints, assign verified service staff, and track resolution lifecycles.</p>
+    </div>
+    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+        <a href="{% url 'admin_analytics' %}" class="btn btn-secondary">
+            📊 View Analytics
+        </a>
+        <a href="{% url 'admin_staff' %}" class="btn btn-secondary">
+            🛠️ Staff Directory
+        </a>
+        <a href="{% url 'admin_users' %}" class="btn btn-secondary">
+            👥 User Management
+        </a>
+    </div>
+</div>
 
+<!-- Search & Filtering Bar -->
 <div class="filter-card">
-    <h2>Search & Filter</h2>
     <form method="get" class="filter-form">
-        
-        <input type="text" name="search" class="form-control search-input" placeholder="Search title, description..." value="{{ search_query }}">
+        <input type="text" name="search" class="form-control search-input" placeholder="Search by title, location, or description..." value="{{ search_query }}">
 
         <select name="priority" class="form-control">
             <option value="">All Priorities</option>
-            <option value="HIGH" {% if priority_filter == "HIGH" %}selected{% endif %}>🔴 High</option>
-            <option value="MEDIUM" {% if priority_filter == "MEDIUM" %}selected{% endif %}>🟠 Medium</option>
-            <option value="LOW" {% if priority_filter == "LOW" %}selected{% endif %}>🟢 Low</option>
+            <option value="HIGH" {% if priority_filter == "HIGH" %}selected{% endif %}>🔴 High Priority</option>
+            <option value="MEDIUM" {% if priority_filter == "MEDIUM" %}selected{% endif %}>🟠 Medium Priority</option>
+            <option value="LOW" {% if priority_filter == "LOW" %}selected{% endif %}>🟢 Low Priority</option>
         </select>
 
         <select name="status" class="form-control">
@@ -120,63 +189,120 @@
             <option value="resolved" {% if status_filter == "resolved" %}selected{% endif %}>Resolved</option>
         </select>
 
-        <button type="submit" class="button">🔍 Filter</button>
-        <a href="{% url 'admin_dashboard' %}" class="button" style="background: white; color: var(--text-main); border: 1px solid var(--border-color);">Clear</a>
+        <button type="submit" class="btn btn-primary" style="padding: 0.7rem 1.4rem;">
+            🔍 Search & Filter
+        </button>
+
+        {% if search_query or priority_filter or status_filter %}
+            <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary" style="padding: 0.7rem 1.1rem;">
+                Clear Filters
+            </a>
+        {% endif %}
     </form>
+</div>
+
+<!-- Tickets List -->
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+    <h2 style="font-size: 1.35rem; font-weight: 800; letter-spacing: -0.02em;">All Campus Tickets</h2>
+    <span style="font-size: 0.875rem; color: var(--text-muted); font-weight: 600;">
+        Showing {{ complaints|length }} Tickets
+    </span>
 </div>
 
 {% if complaints %}
     {% for complaint in complaints %}
-        <div class="admin-issue-card">
-            
-            <div class="admin-issue-header">
-                <div style="flex: 1; padding-right: 20px;">
-                    <!-- Highlighted Title Here -->
-                    <div class="issue-title-highlight">{{ complaint.title }}</div>
-                    <div class="admin-issue-desc">{{ complaint.description }}</div>
-                </div>
-                <div style="text-align: right; min-width: 100px;">
-                    <div class="badge badge-{{ complaint.priority|lower }}">{{ complaint.priority }}</div>
-                    <div style="margin-top: 5px; font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">{{ complaint.get_status_display }}</div>
-                </div>
-            </div>
-
-            <div class="admin-issue-grid">
-                <div class="admin-grid-item">
-                    <span class="admin-grid-label">Category</span>
-                    <span class="admin-grid-value">{{ complaint.category }}</span>
-                </div>
-                <div class="admin-grid-item">
-                    <span class="admin-grid-label">Location</span>
-                    <span class="admin-grid-value">{{ complaint.location }}</span>
-                </div>
-                <div class="admin-grid-item">
-                    <span class="admin-grid-label">Submitted By</span>
-                    <span class="admin-grid-value">{{ complaint.submitted_by.username }}</span>
-                </div>
-                <div class="admin-grid-item">
-                    <span class="admin-grid-label">Assigned Staff</span>
-                    <span class="admin-grid-value">
-                        {% if complaint.assigned_to %}
-                            {{ complaint.assigned_to.username }}
-                        {% else %}
-                            <span style="color: var(--danger);">Unassigned</span>
+        <div class="admin-ticket-card">
+            <div class="admin-ticket-top">
+                <div style="flex: 1;">
+                    <a href="{% url 'complaint_detail' complaint.id %}" class="admin-title-link">
+                        {{ complaint.title }}
+                        {% if complaint.comments.count > 0 %}
+                            <span style="font-size: 0.75rem; background: #e0e7ff; color: #4338ca; font-weight: 700; padding: 0.1rem 0.45rem; border-radius: var(--radius-full);">
+                                💬 {{ complaint.comments.count }}
+                            </span>
                         {% endif %}
-                    </span>
+                    </a>
+                    <p style="color: var(--text-muted); font-size: 0.925rem; margin-top: 0.35rem; line-height: 1.55;">
+                        {{ complaint.description }}
+                    </p>
+                </div>
+
+                <div style="text-align: right; flex-shrink: 0;">
+                    <!-- Priority Badge -->
+                    {% if complaint.priority == "HIGH" %}
+                        <span class="priority-badge badge-priority-high">
+                            <span class="priority-dot"></span> High Priority
+                        </span>
+                    {% elif complaint.priority == "MEDIUM" %}
+                        <span class="priority-badge badge-priority-medium">
+                            <span class="priority-dot"></span> Medium
+                        </span>
+                    {% else %}
+                        <span class="priority-badge badge-priority-low">
+                            <span class="priority-dot"></span> Low
+                        </span>
+                    {% endif %}
+                    <div style="margin-top: 0.35rem;">
+                        <span class="status-pill status-{{ complaint.status }}">
+                            {{ complaint.get_status_display }}
+                        </span>
+                    </div>
                 </div>
             </div>
 
-            {% if not complaint.assigned_to %}
-                <div class="admin-issue-footer">
-                    <a class="button" href="{% url 'assign_complaint' complaint.id %}">Assign Staff</a>
+            <!-- Meta Strip -->
+            <div class="admin-ticket-meta">
+                <div>
+                    <div class="admin-meta-label">Category</div>
+                    <div class="admin-meta-val">{{ complaint.category|default:"General" }}</div>
                 </div>
-            {% endif %}
+                <div>
+                    <div class="admin-meta-label">Location</div>
+                    <div class="admin-meta-val">📍 {{ complaint.location|default:"Campus" }}</div>
+                </div>
+                <div>
+                    <div class="admin-meta-label">Submitted By</div>
+                    <div class="admin-meta-val">👤 {{ complaint.submitted_by.username }}</div>
+                </div>
+                <div>
+                    <div class="admin-meta-label">Assigned Staff</div>
+                    <div class="admin-meta-val">
+                        {% if complaint.assigned_to %}
+                            🛠️ {{ complaint.assigned_to.username }}
+                        {% else %}
+                            <span style="color: var(--danger); font-weight: 700;">⚠️ Unassigned</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
 
+            <!-- Ticket Footer -->
+            <div class="admin-ticket-footer">
+                <a href="{% url 'complaint_detail' complaint.id %}" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.45rem 0.95rem;">
+                    💬 Open Chat & Audit Log
+                </a>
+
+                <div>
+                    {% if not complaint.assigned_to %}
+                        <a href="{% url 'assign_complaint' complaint.id %}" class="btn btn-primary" style="font-size: 0.85rem; padding: 0.5rem 1.25rem;">
+                            + Assign to Staff
+                        </a>
+                    {% else %}
+                        <a href="{% url 'assign_complaint' complaint.id %}" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.45rem 0.95rem;">
+                            Reassign Staff
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     {% endfor %}
 {% else %}
-    <div class="card" style="text-align: center; color: var(--text-muted); padding: 3rem;">
-        No complaints found matching your search criteria.
+    <div class="card" style="text-align: center; padding: 4rem 2rem;">
+        <div style="font-size: 2.75rem; margin-bottom: 0.85rem;">🔍</div>
+        <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 0.5rem;">No Matching Tickets</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">
+            No campus complaints match your current filter settings. Try adjusting your search query or priority filters.
+        </p>
     </div>
 {% endif %}
 {% endblock %}

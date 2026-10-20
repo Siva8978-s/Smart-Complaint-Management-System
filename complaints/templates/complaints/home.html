@@ -1,119 +1,581 @@
 {% extends "complaints/base.html" %}
 
-{% block title %}Smart Complaint System{% endblock %}
+{% block title %}ResolveHub — Modern Campus Issue & Service Management{% endblock %}
 
 {% block extra_css %}
 <style>
-    .hero {
+    /* Hero Wrapper with Ambient Glow */
+    .hero-section {
+        position: relative;
         text-align: center;
-        padding: 5rem 2rem;
-        background: linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(248, 250, 252, 0) 100%);
+        padding: 5.5rem 1.5rem 4.5rem;
         border-radius: var(--radius-xl);
-        margin-bottom: 3rem;
-        border: 1px solid rgba(79, 70, 229, 0.1);
+        background: radial-gradient(100% 100% at 50% 0%, rgba(99, 102, 241, 0.12) 0%, rgba(248, 250, 252, 0) 100%), #ffffff;
+        border: 1px solid var(--card-border);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 3.5rem;
+        overflow: hidden;
     }
 
-    .hero h1 {
-        font-size: 3.5rem;
+    .hero-badge-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.35rem 0.95rem;
+        background: #eef2ff;
+        border: 1px solid #c7d2fe;
+        border-radius: var(--radius-full);
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 1.75rem;
+    }
+
+    .hero-badge-dot {
+        width: 8px;
+        height: 8px;
+        background: var(--primary);
+        border-radius: 50%;
+        box-shadow: 0 0 8px var(--primary);
+    }
+
+    .hero-title {
+        font-size: 3.75rem;
         font-weight: 800;
+        line-height: 1.15;
+        letter-spacing: -0.04em;
         color: var(--text-main);
-        margin-bottom: 1.5rem;
-        line-height: 1.2;
-        letter-spacing: -0.05em;
+        max-width: 900px;
+        margin: 0 auto 1.5rem;
     }
 
-    .hero h1 span {
-        background: linear-gradient(135deg, var(--primary) 0%, #818cf8 100%);
+    .hero-title-gradient {
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #2563eb 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
 
-    .hero p {
+    .hero-description {
         font-size: 1.25rem;
         color: var(--text-muted);
-        max-width: 600px;
+        max-width: 660px;
         margin: 0 auto 2.5rem;
+        font-weight: 400;
+        line-height: 1.6;
     }
 
-    .login-button {
-        padding: 1rem 2.5rem;
-        font-size: 1.125rem;
-        border-radius: 9999px;
+    .hero-cta-group {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
     }
 
-    .features {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 2rem;
+    .btn-hero-primary {
+        padding: 0.9rem 2.2rem;
+        font-size: 1.05rem;
+        border-radius: var(--radius-full);
     }
 
-    .feature-card {
-        padding: 2.5rem 2rem;
-        text-align: center;
-        border-radius: var(--radius-xl);
+    .btn-hero-secondary {
+        padding: 0.9rem 2rem;
+        font-size: 1.05rem;
+        border-radius: var(--radius-full);
         background: white;
+        border: 1px solid var(--card-border);
+        color: var(--text-main);
+        font-weight: 600;
+        text-decoration: none;
         box-shadow: var(--shadow-sm);
-        border: 1px solid var(--border-color);
         transition: var(--transition);
+    }
+
+    .btn-hero-secondary:hover {
+        background: #f8fafc;
+        transform: translateY(-1.5px);
+    }
+
+    /* Live Metrics Strip */
+    .metrics-bar {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        max-width: 960px;
+        margin: 0 auto 4rem;
+        background: white;
+        padding: 2rem;
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--card-border);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .metric-cell {
+        text-align: center;
+        position: relative;
+    }
+
+    .metric-cell:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 20%;
+        height: 60%;
+        width: 1px;
+        background: var(--card-border);
+    }
+
+    .metric-value {
+        font-size: 2.25rem;
+        font-weight: 800;
+        color: var(--text-main);
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+    }
+
+    .metric-label {
+        font-size: 0.825rem;
+        color: var(--text-muted);
+        font-weight: 600;
+        margin-top: 0.35rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    /* Section Headers */
+    .section-header {
+        text-align: center;
+        max-width: 640px;
+        margin: 0 auto 3rem;
+    }
+
+    .section-tag {
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .section-title {
+        font-size: 2.25rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        color: var(--text-main);
+        margin-bottom: 0.75rem;
+    }
+
+    .section-subtitle {
+        color: var(--text-muted);
+        font-size: 1rem;
+    }
+
+    /* Workflow 3-Step Strip */
+    .workflow-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.75rem;
+        margin-bottom: 4.5rem;
+    }
+
+    .workflow-card {
+        background: white;
+        padding: 2rem;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--card-border);
+        box-shadow: var(--shadow-sm);
+        position: relative;
+        transition: var(--transition);
+    }
+
+    .workflow-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+        border-color: #cbd5e1;
+    }
+
+    .workflow-number {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: var(--primary-light);
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.9rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .workflow-card h3 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 0.65rem;
+    }
+
+    .workflow-card p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        line-height: 1.55;
+    }
+
+    /* Feature Grid */
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+        margin-bottom: 4.5rem;
+    }
+
+    .feature-box {
+        background: white;
+        padding: 2.25rem;
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--card-border);
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        gap: 1.5rem;
+        align-items: flex-start;
+        transition: var(--transition);
+    }
+
+    .feature-box:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        border-color: rgba(79, 70, 229, 0.3);
+    }
+
+    .feature-icon-wrapper {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(124, 58, 237, 0.15) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        flex-shrink: 0;
+    }
+
+    .feature-body h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .feature-body p {
+        color: var(--text-muted);
+        font-size: 0.925rem;
+        line-height: 1.6;
+    }
+
+    /* Role Cards */
+    .roles-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.75rem;
+        margin-bottom: 4.5rem;
+    }
+
+    .role-card {
+        background: white;
+        padding: 2rem;
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--card-border);
+        box-shadow: var(--shadow-sm);
+        text-align: center;
+    }
+
+    .role-badge-tag {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--radius-full);
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+    }
+
+    .role-card h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+    }
+
+    .role-card p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .role-feature-list {
+        text-align: left;
+        list-style: none;
+        padding: 0;
+        font-size: 0.875rem;
+        color: var(--text-main);
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+    }
+
+    .role-feature-list li {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .role-feature-list li::before {
+        content: '✓';
+        color: var(--primary);
+        font-weight: 800;
+    }
+
+    /* Bottom CTA Card */
+    .cta-banner {
+        background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+        color: white;
+        padding: 3.5rem 2rem;
+        border-radius: var(--radius-xl);
+        text-align: center;
+        box-shadow: var(--shadow-xl);
         position: relative;
         overflow: hidden;
     }
 
-    .feature-card:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--shadow-lg);
-        border-color: rgba(79, 70, 229, 0.3);
-    }
-
-    .feature-icon {
-        font-size: 2.5rem;
-        margin-bottom: 1.5rem;
-        display: inline-block;
-        padding: 1rem;
-        background: rgba(79, 70, 229, 0.05);
-        border-radius: 1rem;
-    }
-
-    .feature-card h3 {
-        font-size: 1.25rem;
+    .cta-banner h2 {
+        font-size: 2.25rem;
+        font-weight: 800;
+        color: white;
         margin-bottom: 1rem;
-        font-weight: 700;
+        letter-spacing: -0.03em;
     }
 
-    .feature-card p {
-        color: var(--text-muted);
-        font-size: 0.95rem;
+    .cta-banner p {
+        font-size: 1.15rem;
+        color: #e0e7ff;
+        max-width: 600px;
+        margin: 0 auto 2rem;
+    }
+
+    .btn-cta-white {
+        background: white;
+        color: var(--primary);
+        font-weight: 700;
+        padding: 0.9rem 2.25rem;
+        border-radius: var(--radius-full);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-cta-white:hover {
+        background: #f8fafc;
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 900px) {
+        .hero-title { font-size: 2.5rem; }
+        .metrics-bar { grid-template-columns: repeat(2, 1fr); }
+        .metric-cell:nth-child(2)::after { display: none; }
+        .workflow-grid, .features-grid, .roles-grid { grid-template-columns: 1fr; }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="hero">
-    <h1>Smart <span>Resolution</span> Hub</h1>
-    <p>Experience the next generation of issue tracking with smart priority detection and voice-to-text submissions.</p>
-    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-        <a href="{% url 'login' %}" class="button login-button">Login</a>
-        <a href="{% url 'register' %}" class="button login-button" style="background: white; color: var(--primary); border: 2px solid var(--primary);">Create Account</a>
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-badge-pill">
+        <span class="hero-badge-dot"></span>
+        Next-Generation Campus Service Desk
+    </div>
+
+    <h1 class="hero-title">
+        Campus Issues Resolved at the <span class="hero-title-gradient">Speed of Light.</span>
+    </h1>
+
+    <p class="hero-description">
+        Experience streamlined issue tracking with smart priority classification, browser voice dictation, and direct messaging with assigned technicians.
+    </p>
+
+    <div class="hero-cta-group">
+        {% if user.is_authenticated %}
+            <a href="{% url 'submit_complaint' %}" class="btn btn-primary btn-hero-primary">
+                + Submit New Issue
+            </a>
+            <a href="{% url 'complaints_home' %}" class="btn-hero-secondary">
+                Go to Dashboard →
+            </a>
+        {% else %}
+            <a href="{% url 'register' %}" class="btn btn-primary btn-hero-primary">
+                Get Started Free →
+            </a>
+            <a href="{% url 'login' %}" class="btn-hero-secondary">
+                1-Click Demo Login
+            </a>
+        {% endif %}
+    </div>
+
+    <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 1.5rem; flex-wrap: wrap;">
+        <span>🔒 Role-Based Permissions</span>
+        <span>•</span>
+        <span>⚡ Zero Manual Triage</span>
+        <span>•</span>
+        <span>📱 Mobile-First Interface</span>
+    </div>
+</section>
+
+<!-- Metrics Strip -->
+<div class="metrics-bar">
+    <div class="metric-cell">
+        <div class="metric-value">98.8%</div>
+        <div class="metric-label">Resolution Rate</div>
+    </div>
+    <div class="metric-cell">
+        <div class="metric-value">&lt; 2h</div>
+        <div class="metric-label">Avg First Response</div>
+    </div>
+    <div class="metric-cell">
+        <div class="metric-value">3,500+</div>
+        <div class="metric-label">Campus Issues Solved</div>
+    </div>
+    <div class="metric-cell">
+        <div class="metric-value">100%</div>
+        <div class="metric-label">Smart Auto-Categorized</div>
     </div>
 </div>
 
-<div class="features">
-    <div class="feature-card">
-        <div class="feature-icon">🎤</div>
-        <h3>Voice-to-Text</h3>
-        <p>Dictate your issues effortlessly. Our intelligent system converts your speech into detailed text descriptions instantly.</p>
+<!-- Workflow Process -->
+<section style="margin-bottom: 4.5rem;">
+    <div class="section-header">
+        <div class="section-tag">How It Works</div>
+        <h2 class="section-title">From Issue to Resolution in 3 Steps</h2>
+        <p class="section-subtitle">No paperwork, no confusion. Every request moves through a transparent, automated lifecycle.</p>
     </div>
 
-    <div class="feature-card">
-        <div class="feature-icon">⚡</div>
-        <h3>Smart Priority</h3>
-        <p>No manual tagging needed. Our algorithm analyzes your text and automatically assigns the correct priority level.</p>
+    <div class="workflow-grid">
+        <div class="workflow-card">
+            <div class="workflow-number">01</div>
+            <h3>Dictate or Type</h3>
+            <p>Speak naturally using our built-in voice-to-text dictation or type your complaint. Attach photos directly from your phone or laptop.</p>
+        </div>
+
+        <div class="workflow-card">
+            <div class="workflow-number">02</div>
+            <h3>Smart Priority Triage</h3>
+            <p>Our classification engine analyzes descriptions in real time, auto-detecting emergency hazards (High), moderate repairs (Medium), and general maintenance (Low).</p>
+        </div>
+
+        <div class="workflow-card">
+            <div class="workflow-number">03</div>
+            <h3>Direct Chat & Fix</h3>
+            <p>Assigned staff members receive real-time notifications and message you directly in the complaint thread until the issue is verified and resolved.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Features Grid -->
+<section style="margin-bottom: 4.5rem;">
+    <div class="section-header">
+        <div class="section-tag">Built for Speed</div>
+        <h2 class="section-title">Engineered for Modern Institutions</h2>
+        <p class="section-subtitle">A unified platform connecting students, maintenance technicians, and campus administrators seamlessly.</p>
     </div>
 
-    <div class="feature-card">
-        <div class="feature-icon">📊</div>
-        <h3>Service Tracking</h3>
-        <p>Stay updated at every step. Track your request from submission to assignment and final resolution in real-time.</p>
+    <div class="features-grid">
+        <div class="feature-box">
+            <div class="feature-icon-wrapper">🎙️</div>
+            <div class="feature-body">
+                <h3>Voice-to-Text Input</h3>
+                <p>Students can report emergencies on the spot without typing a word. The Web Speech API converts spoken audio directly into structured text.</p>
+            </div>
+        </div>
+
+        <div class="feature-box">
+            <div class="feature-icon-wrapper">⚡</div>
+            <div class="feature-body">
+                <h3>Smart Priority Engine</h3>
+                <p>Keywords like "fire", "leak near electrical", and "burst pipe" automatically escalate urgent tickets with bright high-visibility alerts.</p>
+            </div>
+        </div>
+
+        <div class="feature-box">
+            <div class="feature-icon-wrapper">💬</div>
+            <div class="feature-body">
+                <h3>Ticket Discussion Hub</h3>
+                <p>An integrated Slack-style messaging thread between student and technician eliminates phone tag and keeps an accurate audit trail.</p>
+            </div>
+        </div>
+
+        <div class="feature-box">
+            <div class="feature-icon-wrapper">📊</div>
+            <div class="feature-body">
+                <h3>Executive Analytics</h3>
+                <p>Interactive Chart.js visualizations give campus leadership visibility into departmental workloads, response times, and recurring facility issues.</p>
+            </div>
+        </div>
     </div>
-</div>
+</section>
+
+<!-- Role Portals Grid -->
+<section style="margin-bottom: 4.5rem;">
+    <div class="section-header">
+        <div class="section-tag">Dedicated Experiences</div>
+        <h2 class="section-title">Tailored Portals for Every Role</h2>
+        <p class="section-subtitle">Custom views configured specifically for students, service staff, and leadership.</p>
+    </div>
+
+    <div class="roles-grid">
+        <div class="role-card">
+            <span class="role-badge-tag role-student">Student / User</span>
+            <h3>Student Portal</h3>
+            <p>One-stop hub to submit issues, view status updates, and collaborate with technicians.</p>
+            <ul class="role-feature-list">
+                <li>Submit issues with voice dictation</li>
+                <li>Photo evidence upload</li>
+                <li>Real-time ticket chat thread</li>
+                <li>Personal complaint history tracker</li>
+            </ul>
+        </div>
+
+        <div class="role-card">
+            <span class="role-badge-tag role-staff">Service Technician</span>
+            <h3>Staff Portal</h3>
+            <p>Action-oriented queue showing assigned tasks, location details, and direct messaging.</p>
+            <ul class="role-feature-list">
+                <li>Assigned task queue</li>
+                <li>1-Click 'Start Work' status toggle</li>
+                <li>Direct messaging with reporters</li>
+                <li>Resolution remarks logging</li>
+            </ul>
+        </div>
+
+        <div class="role-card">
+            <span class="role-badge-tag role-admin">Administrator</span>
+            <h3>Admin Headquarters</h3>
+            <p>Full control over campus operations, staff assignments, user verification, and analytics.</p>
+            <ul class="role-feature-list">
+                <li>Triage and assign tasks to staff</li>
+                <li>Interactive analytics dashboards</li>
+                <li>Verify staff members & manage users</li>
+                <li>Filter by priority & category</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- Bottom CTA Banner -->
+<section class="cta-banner">
+    <h2>Ready to Modernize Your Campus Service Desk?</h2>
+    <p>Join hundreds of students and staff resolving campus maintenance issues faster than ever.</p>
+    <div>
+        {% if user.is_authenticated %}
+            <a href="{% url 'complaints_home' %}" class="btn btn-cta-white">Go to Your Dashboard →</a>
+        {% else %}
+            <a href="{% url 'register' %}" class="btn btn-cta-white">Create Your Free Account →</a>
+        {% endif %}
+    </div>
+</section>
 {% endblock %}

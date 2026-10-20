@@ -1,38 +1,112 @@
 {% extends "complaints/base.html" %}
 
-{% block title %}Resolve Issue{% endblock %}
+{% block title %}Resolve Issue #{{ complaint.id }} — ResolveHub{% endblock %}
 
 {% block extra_css %}
 <style>
-    .form-container { max-width: 600px; margin: 0 auto; }
-    .issue-summary { background: #f8fafc; padding: 1.5rem; border-radius: var(--radius-md); margin-bottom: 2rem; border-left: 4px solid var(--success); }
-    .issue-summary h2 { margin-bottom: 0.5rem; font-size: 1.25rem; }
-    
-    .form-group p { margin-bottom: 1.5rem; }
-    .form-group label { display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem; }
-    .form-group textarea { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: #f8fafc; min-height: 120px; resize: vertical; }
-    .form-group textarea:focus { border-color: var(--success); outline: none; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15); background: white; }
+    .form-box-wrapper {
+        max-width: 620px;
+        margin: 0 auto;
+    }
+
+    .resolve-card {
+        background: white;
+        padding: 2.25rem;
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--card-border);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .issue-briefing-box {
+        background: #f8fafc;
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        border-left: 4px solid var(--success);
+        margin-bottom: 2rem;
+    }
+
+    .resolve-card textarea {
+        width: 100%;
+        padding: 0.85rem 1.15rem;
+        border: 1px solid var(--card-border);
+        border-radius: var(--radius-md);
+        background: #f8fafc;
+        font-family: inherit;
+        font-size: 0.95rem;
+        min-height: 130px;
+        resize: vertical;
+        transition: var(--transition);
+        margin-top: 0.4rem;
+    }
+
+    .resolve-card textarea:focus {
+        border-color: var(--success);
+        background: white;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+    }
+
+    .btn-resolve-submit {
+        width: 100%;
+        padding: 0.95rem;
+        background: var(--success);
+        color: white;
+        font-weight: 700;
+        font-size: 1rem;
+        border: none;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        margin-top: 1.25rem;
+        transition: var(--transition);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-resolve-submit:hover {
+        background: #059669;
+        transform: translateY(-1.5px);
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="form-container">
-    <div class="card">
-        <h1 style="margin-bottom: 1.5rem;">Resolve Issue</h1>
-        
-        <div class="issue-summary">
-            <h2>{{ complaint.title }}</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem;">{{ complaint.description }}</p>
+<div class="form-box-wrapper">
+    <div class="resolve-card">
+        <h1 style="font-size: 1.65rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.5rem;">
+            Mark Ticket as Resolved
+        </h1>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.75rem;">
+            Enter your resolution remarks to complete this service task and notify the reporter.
+        </p>
+
+        <div class="issue-briefing-box">
+            <h2 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 0.35rem;">{{ complaint.title }}</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.75rem;">{{ complaint.description }}</p>
+            <div style="display: flex; gap: 0.5rem; font-size: 0.8rem; font-weight: 600;">
+                <span style="background: white; padding: 0.2rem 0.6rem; border-radius: var(--radius-sm); border: 1px solid var(--card-border);">
+                    📍 {{ complaint.location|default:"Campus" }}
+                </span>
+                <span style="background: white; padding: 0.2rem 0.6rem; border-radius: var(--radius-sm); border: 1px solid var(--card-border);">
+                    👤 {{ complaint.submitted_by.username }}
+                </span>
+            </div>
         </div>
 
-        <form method="post" class="form-group">
+        <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="button" style="width: 100%; padding: 1rem; margin-top: 1rem; background: var(--success);">Mark as Resolved</button>
+            <label for="id_resolution_remarks" style="font-weight: 700; font-size: 0.9rem; color: var(--text-main);">
+                Resolution Summary & Remarks *
+            </label>
+            {{ form.resolution_remarks }}
+
+            <button type="submit" class="btn-resolve-submit">
+                ✓ Confirm & Complete Issue
+            </button>
         </form>
-        
+
         <div style="text-align: center; margin-top: 1.5rem;">
-            <a href="{% url 'staff_dashboard' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem;">← Back to Dashboard</a>
+            <a href="{% url 'staff_dashboard' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem; font-weight: 600;">
+                ← Back to Staff Dashboard
+            </a>
         </div>
     </div>
 </div>

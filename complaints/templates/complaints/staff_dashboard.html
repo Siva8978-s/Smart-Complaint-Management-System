@@ -1,146 +1,386 @@
 {% extends "complaints/base.html" %}
 
-{% block title %}Staff Dashboard{% endblock %}
+{% block title %}Technician Workstation — ResolveHub{% endblock %}
 
 {% block extra_css %}
 <style>
-    .dashboard-title { font-size: 1.75rem; font-weight: 700; margin-bottom: 2rem; color: var(--text-main); }
-    
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    .staff-header-card {
+        background: white;
+        padding: 2rem 2.25rem;
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--card-border);
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         gap: 1.5rem;
+        flex-wrap: wrap;
         margin-bottom: 2rem;
     }
 
-    .stat-card {
-        background: var(--card-bg);
-        padding: 1.5rem;
-        border-radius: var(--radius-lg);
-        box-shadow: var(--shadow-sm);
-        border: 1px solid var(--border-color);
-        display: flex;
-        flex-direction: column;
+    .staff-title {
+        font-size: 1.85rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        margin-bottom: 0.35rem;
     }
 
-    .stat-label { color: var(--text-muted); font-size: 0.875rem; font-weight: 600; text-transform: uppercase; margin-bottom: 0.5rem; }
-    .stat-value { font-size: 2rem; font-weight: 700; color: var(--primary); }
+    .staff-meta-subtitle {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
 
+    /* KPI Grid */
+    .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.25rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .kpi-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--card-border);
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: var(--transition);
+    }
+
+    .kpi-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .kpi-label {
+        font-size: 0.775rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        margin-bottom: 0.35rem;
+    }
+
+    .kpi-number {
+        font-size: 2rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1;
+    }
+
+    .kpi-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        flex-shrink: 0;
+    }
+
+    /* Task Cards */
     .task-card {
         background: white;
-        border-radius: var(--radius-lg);
-        border: 1px solid var(--border-color);
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        box-shadow: var(--shadow-sm);
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--card-border);
+        padding: 1.75rem;
+        margin-bottom: 1.25rem;
+        box-shadow: var(--shadow-xs);
+        transition: var(--transition);
     }
-    
-    .task-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
-    .task-header h3 { margin: 0; font-size: 1.1rem; }
-    
-    .task-meta {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-        padding: 1rem;
-        background: var(--bg-color);
-        border-radius: var(--radius-md);
-        font-size: 0.9rem;
-    }
-    .meta-item { display: flex; flex-direction: column; }
-    .meta-label { color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
-    .meta-value { color: var(--text-main); font-weight: 500; }
 
-    .task-actions { border-top: 1px solid var(--border-color); padding-top: 1rem; text-align: right; }
-    
-    .success-alert {
-        padding: 1rem;
-        background: rgba(16, 185, 129, 0.1);
+    .task-card:hover {
+        border-color: rgba(79, 70, 229, 0.35);
+        box-shadow: var(--shadow-md);
+    }
+
+    .task-top-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .task-title-link {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: var(--text-main);
+        text-decoration: none;
+        letter-spacing: -0.02em;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .task-title-link:hover {
+        color: var(--primary);
+    }
+
+    .task-description-preview {
+        color: var(--text-muted);
+        font-size: 0.925rem;
+        margin-top: 0.35rem;
+        line-height: 1.55;
+    }
+
+    .task-specs-strip {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        background: #f8fafc;
+        border: 1px solid #f1f5f9;
         border-radius: var(--radius-md);
-        color: var(--success);
-        font-size: 0.9rem;
+        padding: 0.9rem 1.25rem;
+        margin-bottom: 1.25rem;
+        font-size: 0.85rem;
+    }
+
+    .spec-item-label {
+        font-size: 0.725rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 0.2rem;
+    }
+
+    .spec-item-value {
+        font-weight: 600;
+        color: var(--text-main);
+    }
+
+    .task-actions-toolbar {
+        border-top: 1px solid var(--card-border);
+        padding-top: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .btn-start-work {
+        background: var(--primary);
+        color: white;
+        padding: 0.65rem 1.4rem;
+        border-radius: var(--radius-md);
+        border: none;
+        font-weight: 700;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .btn-start-work:hover {
+        background: var(--primary-hover);
+        transform: translateY(-1px);
+    }
+
+    .btn-resolve-task {
+        background: #059669;
+        color: white;
+        padding: 0.65rem 1.4rem;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        font-size: 0.875rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: var(--transition);
+    }
+
+    .btn-resolve-task:hover {
+        background: #047857;
+        transform: translateY(-1px);
+    }
+
+    .resolved-box-indicator {
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
+        color: #065f46;
+        padding: 0.75rem 1.25rem;
+        border-radius: var(--radius-md);
+        font-size: 0.875rem;
+        width: 100%;
+    }
+
+    @media (max-width: 900px) {
+        .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        .task-specs-strip { grid-template-columns: repeat(2, 1fr); }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<h1 class="dashboard-title">Staff Task Board</h1>
-
-<div class="stats-grid">
-    <div class="stat-card">
-        <span class="stat-label">Total Assigned</span>
-        <span class="stat-value">{{ total }}</span>
+<!-- Staff Header -->
+<div class="staff-header-card">
+    <div>
+        <h1 class="staff-title">Technician Workstation</h1>
+        <p class="staff-meta-subtitle">
+            <span>Logged in as <strong>{{ user.username }}</strong></span>
+            {% if user.profile.department %}
+                <span>•</span>
+                <span style="background: #eef2ff; color: #4338ca; font-weight: 700; padding: 0.15rem 0.6rem; border-radius: var(--radius-full); font-size: 0.8rem;">
+                    {{ user.profile.department }}
+                </span>
+            {% endif %}
+            <span>•</span>
+            <span>{% now "l, F j, Y" %}</span>
+        </p>
     </div>
-    <div class="stat-card">
-        <span class="stat-label">Pending Start</span>
-        <span class="stat-value" style="color: var(--danger);">{{ assigned }}</span>
-    </div>
-    <div class="stat-card">
-        <span class="stat-label">In Progress</span>
-        <span class="stat-value" style="color: var(--warning);">{{ in_progress }}</span>
-    </div>
-    <div class="stat-card">
-        <span class="stat-label">Resolved</span>
-        <span class="stat-value" style="color: var(--success);">{{ resolved }}</span>
+    <div>
+        <span class="system-status-indicator">
+            <span class="status-pulse-dot"></span>
+            Verified Service Staff
+        </span>
     </div>
 </div>
 
-<h2 style="margin-bottom: 1rem; font-size: 1.25rem;">My Assigned Tasks</h2>
+<!-- KPI Metric Cards -->
+<div class="kpi-grid">
+    <div class="kpi-card">
+        <div>
+            <div class="kpi-label">Total Assigned</div>
+            <div class="kpi-number" style="color: var(--text-main);">{{ total }}</div>
+        </div>
+        <div class="kpi-icon" style="background: #eef2ff; color: #4f46e5;">📋</div>
+    </div>
+
+    <div class="kpi-card">
+        <div>
+            <div class="kpi-label">Awaiting Start</div>
+            <div class="kpi-number" style="color: #ef4444;">{{ assigned }}</div>
+        </div>
+        <div class="kpi-icon" style="background: #fef2f2; color: #ef4444;">⏳</div>
+    </div>
+
+    <div class="kpi-card">
+        <div>
+            <div class="kpi-label">Active Work</div>
+            <div class="kpi-number" style="color: #f59e0b;">{{ in_progress }}</div>
+        </div>
+        <div class="kpi-icon" style="background: #fffbeb; color: #f59e0b;">🔧</div>
+    </div>
+
+    <div class="kpi-card">
+        <div>
+            <div class="kpi-label">Completed</div>
+            <div class="kpi-number" style="color: #10b981;">{{ resolved }}</div>
+        </div>
+        <div class="kpi-icon" style="background: #ecfdf5; color: #10b981;">✅</div>
+    </div>
+</div>
+
+<!-- Assigned Tasks Queue -->
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+    <h2 style="font-size: 1.35rem; font-weight: 800; letter-spacing: -0.02em;">Assigned Service Requests</h2>
+    <span style="font-size: 0.875rem; color: var(--text-muted); font-weight: 600;">
+        {{ complaints|length }} Tasks in Queue
+    </span>
+</div>
 
 {% if complaints %}
     {% for complaint in complaints %}
         <div class="task-card">
-            <div class="task-header">
+            <div class="task-top-row">
                 <div>
-                    <!-- <h3>{{ complaint.title }}</h3> -->
-                     <h3><a href="{% url 'complaint_detail' complaint.id %}" style="text-decoration: none; color: var(--text-main);">{{ complaint.title }}</a></h3>
-                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;">{{ complaint.description }}</p>
-                </div>
-                <div class="badge badge-{{ complaint.priority|lower }}">{{ complaint.priority }}</div>
-            </div>
-
-            <div class="task-meta">
-                <div class="meta-item">
-                    <span class="meta-label">Category</span>
-                    <span class="meta-value">{{ complaint.category }}</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Location</span>
-                    <span class="meta-value">{{ complaint.location }}</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Submitted By</span>
-                    <span class="meta-value">{{ complaint.submitted_by.username }}</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Status</span>
-                    <span class="meta-value">{{ complaint.get_status_display }}</span>
-                </div>
-            </div>
-
-            <div class="task-actions">
-                {% if complaint.status == "assigned" %}
-                    <form method="post" action="{% url 'start_complaint' complaint.id %}" style="display:inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="button">Start Work</button>
-                    </form>
-                {% elif complaint.status == "in_progress" %}
-                    <a href="{% url 'resolve_complaint' complaint.id %}" class="button" style="background: var(--success);">Resolve Task</a>
-                {% elif complaint.status == "resolved" %}
-                    <div class="success-alert">
-                        <strong>✓ Task Resolved</strong>
-                        {% if complaint.resolution_remarks %}
-                            <br><span style="color: var(--text-main);">Remarks: {{ complaint.resolution_remarks }}</span>
+                    <a href="{% url 'complaint_detail' complaint.id %}" class="task-title-link">
+                        {{ complaint.title }}
+                        {% if complaint.comments.count > 0 %}
+                            <span style="font-size: 0.75rem; background: #e0e7ff; color: #4338ca; font-weight: 700; padding: 0.1rem 0.45rem; border-radius: var(--radius-full);">
+                                💬 {{ complaint.comments.count }}
+                            </span>
                         {% endif %}
+                    </a>
+                    <p class="task-description-preview">{{ complaint.description }}</p>
+                </div>
+                <div style="flex-shrink: 0; text-align: right;">
+                    <!-- Priority -->
+                    {% if complaint.priority == "HIGH" %}
+                        <span class="priority-badge badge-priority-high">
+                            <span class="priority-dot"></span> High Priority
+                        </span>
+                    {% elif complaint.priority == "MEDIUM" %}
+                        <span class="priority-badge badge-priority-medium">
+                            <span class="priority-dot"></span> Medium
+                        </span>
+                    {% else %}
+                        <span class="priority-badge badge-priority-low">
+                            <span class="priority-dot"></span> Low
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Task Specs Strip -->
+            <div class="task-specs-strip">
+                <div>
+                    <div class="spec-item-label">Category</div>
+                    <div class="spec-item-value">{{ complaint.category|default:"General" }}</div>
+                </div>
+                <div>
+                    <div class="spec-item-label">Location</div>
+                    <div class="spec-item-value">📍 {{ complaint.location|default:"Campus" }}</div>
+                </div>
+                <div>
+                    <div class="spec-item-label">Reported By</div>
+                    <div class="spec-item-value">👤 {{ complaint.submitted_by.username }}</div>
+                </div>
+                <div>
+                    <div class="spec-item-label">Current Status</div>
+                    <div class="spec-item-value">
+                        <span class="status-pill status-{{ complaint.status }}">
+                            {{ complaint.get_status_display }}
+                        </span>
                     </div>
-                {% endif %}
+                </div>
+            </div>
+
+            <!-- Actions Toolbar -->
+            <div class="task-actions-toolbar">
+                <a href="{% url 'complaint_detail' complaint.id %}" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
+                    💬 Open Discussion & Evidence
+                </a>
+
+                <div>
+                    {% if complaint.status == "assigned" %}
+                        <form method="post" action="{% url 'start_complaint' complaint.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-start-work">
+                                🔧 Start Work (Mark In Progress)
+                            </button>
+                        </form>
+                    {% elif complaint.status == "in_progress" %}
+                        <a href="{% url 'resolve_complaint' complaint.id %}" class="btn-resolve-task">
+                            ✓ Mark as Resolved & Enter Remarks
+                        </a>
+                    {% elif complaint.status == "resolved" %}
+                        <div class="resolved-box-indicator">
+                            <strong>✓ Task Completed</strong>
+                            {% if complaint.resolution_remarks %}
+                                <div style="margin-top: 0.25rem;">{{ complaint.resolution_remarks }}</div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
     {% endfor %}
 {% else %}
-    <div class="card" style="text-align: center; color: var(--text-muted); padding: 3rem;">
-        No tasks have been assigned to you yet. You're all caught up!
+    <div class="card" style="text-align: center; padding: 4rem 2rem;">
+        <div style="font-size: 2.75rem; margin-bottom: 0.85rem;">☕</div>
+        <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 0.5rem;">Queue is Empty</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">
+            No tasks are currently assigned to you. You're all caught up!
+        </p>
     </div>
 {% endif %}
 {% endblock %}
