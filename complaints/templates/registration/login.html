@@ -4,204 +4,157 @@
 Login - Smart Complaint Management System
 {% endblock %}
 
-
 {% block extra_css %}
-
 <style>
-
     .login-wrapper {
         min-height: 70vh;
-
         display: flex;
         align-items: center;
         justify-content: center;
+        padding: 2rem 1rem;
     }
-
 
     .login-card {
         width: 100%;
         max-width: 420px;
-
         background: white;
-
         padding: 35px;
-
-        border-radius: 12px;
-
-        box-shadow:
-            0 4px 15px rgba(0, 0, 0, 0.10);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border-color);
     }
-
 
     .login-card h1 {
         text-align: center;
-
-        margin-bottom: 10px;
+        margin-bottom: 8px;
+        font-size: 1.75rem;
+        font-weight: 700;
     }
-
 
     .login-subtitle {
         text-align: center;
-
-        color: #666;
-
-        margin-bottom: 30px;
+        color: var(--text-muted);
+        margin-bottom: 25px;
+        font-size: 0.95rem;
     }
-
 
     .login-card form p {
         margin-bottom: 18px;
     }
 
-
     .login-card label {
         display: block;
-
         margin-bottom: 6px;
-
-        font-weight: bold;
+        font-weight: 600;
+        font-size: 0.875rem;
     }
-
 
     .login-card input {
         width: 100%;
-
-        padding: 11px;
-
-        border: 1px solid #ccc;
-
-        border-radius: 6px;
-
-        font-size: 15px;
+        padding: 10px 14px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        font-size: 0.95rem;
+        transition: var(--transition);
     }
-
 
     .login-card input:focus {
         outline: none;
-
-        border-color: #2563eb;
-
-        box-shadow:
-            0 0 0 2px rgba(37, 99, 235, 0.15);
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
     }
-
 
     .login-button {
         width: 100%;
-
         padding: 12px;
-
         margin-top: 10px;
-
-        background: #2563eb;
-
+        background: var(--primary);
         color: white;
-
         border: none;
-
-        border-radius: 6px;
-
-        font-size: 16px;
-
-        font-weight: bold;
-
+        border-radius: var(--radius-md);
+        font-size: 1rem;
+        font-weight: 600;
         cursor: pointer;
+        transition: var(--transition);
     }
-
 
     .login-button:hover {
-        background: #1d4ed8;
+        background: var(--primary-hover);
+        transform: translateY(-1px);
     }
-
 
     .error-message {
         background: #fee2e2;
-
         color: #b91c1c;
-
-        padding: 10px;
-
-        border-radius: 6px;
-
+        padding: 10px 14px;
+        border-radius: var(--radius-md);
         margin-bottom: 18px;
-
         text-align: center;
+        font-size: 0.9rem;
     }
 
-
-    .home-link {
-        display: block;
-
+    .signup-prompt {
         text-align: center;
-
         margin-top: 20px;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
 
-        color: #2563eb;
-
+    .signup-prompt a {
+        color: var(--primary);
+        font-weight: 600;
         text-decoration: none;
     }
 
-
-    .home-link:hover {
+    .signup-prompt a:hover {
         text-decoration: underline;
     }
 
-</style>
+    .home-link {
+        display: block;
+        text-align: center;
+        margin-top: 15px;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.85rem;
+    }
 
+    .home-link:hover {
+        color: var(--primary);
+    }
+</style>
 {% endblock %}
 
-
 {% block content %}
-
 <div class="login-wrapper">
-
     <div class="login-card">
-
         <h1>Login</h1>
-
         <p class="login-subtitle">
             Smart Complaint Management System
         </p>
 
-
         {% if form.errors %}
-
             <div class="error-message">
-                Invalid username or password.
-                Please try again.
+                Invalid username or password. Please try again.
             </div>
-
         {% endif %}
 
-
         <form method="post">
-
             {% csrf_token %}
-
             {{ form.as_p }}
 
-
-            <button
-                type="submit"
-                class="login-button">
-
+            <button type="submit" class="login-button">
                 Login
-
             </button>
-
         </form>
 
+        <p class="signup-prompt">
+            Don't have an account? <a href="{% url 'register' %}">Sign up as Student</a>
+        </p>
 
-        <a
-            href="{% url 'home' %}"
-            class="home-link">
-
+        <a href="{% url 'home' %}" class="home-link">
             ← Back to Home
-
         </a>
-
     </div>
-
 </div>
-
 {% endblock %}

@@ -770,3 +770,29 @@ def admin_verify_staff(request, profile_id):
 
 
 
+
+
+
+# =========================================================
+# PUBLIC USER REGISTRATION (STUDENT)
+# =========================================================
+
+def register(request):
+    from .forms import StudentRegisterForm
+
+    if request.user.is_authenticated:
+        return redirect("complaints_home")
+
+    if request.method == "POST":
+        form = StudentRegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data["password"])
+            user.save()
+            Profile.objects.create(user=user, role="student")
+            messages.success(request, "Account created successfully! You can now log in.")
+            return redirect("login")
+    else:
+        form = StudentRegisterForm()
+
+    return render(request, "registration/register.html", {"form": form})

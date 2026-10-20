@@ -384,3 +384,37 @@ class StaffEditForm(forms.ModelForm):
                 "placeholder": "Example: 9876543210"
             }),
         }
+
+
+
+# =========================================================
+# PUBLIC STUDENT REGISTRATION FORM
+# =========================================================
+
+class StudentRegisterForm(forms.ModelForm):
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={"placeholder": "Enter password"}),
+        required=True
+    )
+    confirm_password = forms.CharField(
+        widget=forms.PasswordInput(attrs={"placeholder": "Confirm password"}),
+        required=True
+    )
+
+    class Meta:
+        model = User
+        fields = ["username", "first_name", "last_name", "email", "password", "confirm_password"]
+        widgets = {
+            "username": forms.TextInput(attrs={"placeholder": "Choose a username"}),
+            "first_name": forms.TextInput(attrs={"placeholder": "First name"}),
+            "last_name": forms.TextInput(attrs={"placeholder": "Last name"}),
+            "email": forms.EmailInput(attrs={"placeholder": "Email address"}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        confirm_password = cleaned_data.get("confirm_password")
+        if password and confirm_password and password != confirm_password:
+            raise forms.ValidationError("Passwords do not match.")
+        return cleaned_data

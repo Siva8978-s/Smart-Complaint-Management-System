@@ -228,6 +228,13 @@
                 </form>
             </div>
         </div>
+        {% else %}
+        <div class="nav-right">
+            <div class="nav-links">
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'register' %}" class="button" style="padding: 0.45rem 1.1rem; font-size: 0.875rem;">Register</a>
+            </div>
+        </div>
         {% endif %}
     </nav>
 
