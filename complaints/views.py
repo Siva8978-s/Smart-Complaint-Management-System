@@ -302,13 +302,11 @@ def start_complaint(request, complaint_id):
 
 @role_required("staff")
 def resolve_complaint(request, complaint_id):
-    complaint = Complaint.objects.get(
+    complaint = get_object_or_404(
+        Complaint,
         id=complaint_id,
         assigned_to=request.user
     )
-
-    if complaint.status != "in_progress":
-        return redirect("staff_dashboard")
 
     if request.method == "POST":
         form = ResolutionForm(request.POST)
@@ -318,6 +316,7 @@ def resolve_complaint(request, complaint_id):
             complaint.status = "resolved"
             complaint.save()
 
+            messages.success(request, f"Task '{complaint.title}' marked as resolved successfully.")
             return redirect("staff_dashboard")
 
     else:
