@@ -257,7 +257,7 @@ def admin_dashboard(request):
 
 @role_required("admin")
 def assign_complaint(request, complaint_id):
-    complaint = Complaint.objects.get(id=complaint_id)
+    complaint = get_object_or_404(Complaint, id=complaint_id)
 
     if request.method == "POST":
         form = AssignmentForm(request.POST, instance=complaint)
